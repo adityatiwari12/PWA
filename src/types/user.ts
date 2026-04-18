@@ -45,6 +45,13 @@ export interface UserProfile {
   
   familyHistory?: string[];
   
+  // Female Health
+  menstrualCycle?: {
+    isTracking: boolean;
+    lastPeriodDate: string;
+    averageCycleLength: number;
+  };
+  
   // Emergency
   emergencyContacts: EmergencyContact[];
   primaryDoctor?: string;

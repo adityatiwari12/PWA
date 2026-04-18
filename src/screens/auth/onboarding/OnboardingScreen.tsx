@@ -30,6 +30,11 @@ export default function OnboardingScreen() {
   const [heightCm, setHeightCm] = useState('');
   const [weightKg, setWeightKg] = useState('');
 
+  // 1b. Female Health Tracking
+  const [isTrackingCycle, setIsTrackingCycle] = useState(false);
+  const [lastPeriodDate, setLastPeriodDate] = useState('');
+  const [averageCycleLength, setAverageCycleLength] = useState('28');
+
   // 2. Critical Medical Info
   const [bloodType, setBloodType] = useState<BloodType>('Unknown');
   const [allergyInput, setAllergyInput] = useState('');
@@ -122,7 +127,14 @@ export default function OnboardingScreen() {
       hasMonitor,
       preferredLanguage: 'en',
       createdAt: Date.now(),
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
+      ...(gender === 'Female' && isTrackingCycle ? {
+        menstrualCycle: {
+          isTracking: true,
+          lastPeriodDate: lastPeriodDate || new Date().toISOString().split('T')[0],
+          averageCycleLength: parseInt(averageCycleLength) || 28
+        }
+      } : {})
     };
     await dbOperations.saveUserProfile(profile);
     window.location.href = '/';
@@ -190,6 +202,30 @@ export default function OnboardingScreen() {
                 <option value="Other">Other</option>
               </select>
             </div>
+
+            {gender === 'Female' && (
+              <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-rose-900 text-sm">Enable Cycle-Aware Vitals?</h4>
+                  <button onClick={() => setIsTrackingCycle(!isTrackingCycle)} className={`w-12 h-6 rounded-full transition-colors relative ${isTrackingCycle ? 'bg-rose-500' : 'bg-rose-200'}`}>
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${isTrackingCycle ? 'left-7' : 'left-1'}`} />
+                  </button>
+                </div>
+                {isTrackingCycle && (
+                  <div className="grid grid-cols-2 gap-3 mt-2 pt-2 border-t border-rose-200/50">
+                    <div>
+                      <label className="text-xs font-semibold text-rose-800 mb-1 block">1st Day of Last Period</label>
+                      <input type="date" value={lastPeriodDate} onChange={e => setLastPeriodDate(e.target.value)} className="w-full border border-rose-200 bg-white rounded-xl px-3 py-2 text-sm focus:outline-rose-400" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-rose-800 mb-1 block">Avg Cycle (Days)</label>
+                      <input type="number" value={averageCycleLength} onChange={e => setAverageCycleLength(e.target.value)} placeholder="28" className="w-full border border-rose-200 bg-white rounded-xl px-3 py-2 text-sm focus:outline-rose-400" />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-semibold text-gray-500 mb-1 block">Height (cm)</label>

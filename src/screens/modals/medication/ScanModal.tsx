@@ -140,7 +140,7 @@ export default function Scan() {
   const cameraRef = useRef<CameraViewActions>(null);
 
   // UX animation loop for real-time text detection
-  const stableTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const stableTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
 
   useEffect(() => {

@@ -38,10 +38,26 @@ export const useVitalsStore = create<VitalsStore>((set, get) => ({
   vitals: INITIAL_VITALS,
   isSimulating: false,
   
-  startSimulation: () => {
+  startSimulation: async () => {
     if (get().isSimulating) return;
     set({ isSimulating: true });
     
+    let cyclePhase = 'unknown';
+    import('../lib/db').then(({ dbOperations }) => {
+      dbOperations.getUserProfile().then(profile => {
+        if (profile?.menstrualCycle?.isTracking && profile.gender === 'Female') {
+           const { lastPeriodDate, averageCycleLength } = profile.menstrualCycle;
+           const timeDiff = new Date().getTime() - new Date(lastPeriodDate).getTime();
+           const daysIntoCycle = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+           const ovulationDay = averageCycleLength - 14;
+           if (daysIntoCycle > averageCycleLength + 3) cyclePhase = 'late';
+           else if (daysIntoCycle >= ovulationDay + 2) cyclePhase = 'luteal';
+           else if (daysIntoCycle >= ovulationDay - 2 && daysIntoCycle <= ovulationDay + 1) cyclePhase = 'ovulation';
+           else cyclePhase = 'follicular';
+        }
+      });
+    });
+
     simInterval = setInterval(() => {
       set(state => ({
         vitals: state.vitals.map(v => {
@@ -49,7 +65,8 @@ export const useVitalsStore = create<VitalsStore>((set, get) => ({
           let newStatus = v.status;
           
           if (v.id === 'hr') {
-            const change = Math.floor(Math.random() * 5) - 2;
+            const phaseOffset = cyclePhase === 'luteal' ? (Math.random() > 0.7 ? 1 : 0) : 0;
+            const change = Math.floor(Math.random() * 5) - 2 + phaseOffset;
             const next = Math.max(60, Math.min(125, (v.value||0) + change));
             trend = next > (v.value||0) ? 'up' : next < (v.value||0) ? 'down' : 'steady';
             newStatus = next > 100 ? 'high' : next < 60 ? 'low' : 'normal';
@@ -84,7 +101,9 @@ export const useVitalsStore = create<VitalsStore>((set, get) => ({
              return { ...v, value: next, trend, status: newStatus };
           }
           if (v.id === 'temp' && Math.random() > 0.9) {
-             const change = (Math.random() * 0.2 - 0.1);
+             const targetTemp = cyclePhase === 'luteal' ? 98.4 : 97.6;
+             const pull = (targetTemp - (v.value||97.6)) * 0.1;
+             const change = (Math.random() * 0.2 - 0.1) + pull;
              const next = Math.max(97.0, Math.min(102.5, (v.value||0) + change));
              trend = next > (v.value||0) ? 'up' : next < (v.value||0) ? 'down' : 'steady';
              newStatus = next > 100.4 ? 'high' : next < 97 ? 'low' : 'normal';

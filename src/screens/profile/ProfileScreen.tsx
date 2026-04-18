@@ -15,10 +15,12 @@ import {
   Pill,
   Trash2,
   PlusCircle,
-  PhoneCall
+  Sparkles
 } from 'lucide-react';
 import { dbOperations } from '../../lib/db';
 import { useMedicationStore } from '../../store/medicationStore';
+import { useCycleState } from '../../hooks/useCycleState';
+import { generateCycleInsights } from '../../lib/gemini';
 import type { UserProfile } from '../../types/user';
 
 export default function ProfileScreen() {
@@ -27,6 +29,25 @@ export default function ProfileScreen() {
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<UserProfile | null>(null);
   const { medications, fetchMedications } = useMedicationStore();
+  const cycle = useCycleState();
+
+  const [aiInsight, setAiInsight] = useState<string | null>(null);
+  const [loadingInsight, setLoadingInsight] = useState(false);
+  const [aiQuestion, setAiQuestion] = useState('');
+
+  const fetchAiInsight = async (isCustomQuestion: boolean = false) => {
+    if (!profile) return;
+    setLoadingInsight(true);
+    const insight = await generateCycleInsights(
+      profile, 
+      cycle.currentPhase, 
+      cycle.daysIntoCycle,
+      isCustomQuestion && aiQuestion.trim() ? aiQuestion : undefined
+    );
+    setAiInsight(insight);
+    setLoadingInsight(false);
+    if (isCustomQuestion) setAiQuestion('');
+  };
 
   const loadData = async () => {
     const [p] = await Promise.all([
@@ -383,6 +404,96 @@ export default function ProfileScreen() {
                   )}
                 </div>
             </div>
+
+            {/* Cycle Health Block */}
+            {profile.menstrualCycle?.isTracking && (
+              <div className="bg-rose-50 border border-rose-100 rounded-[32px] p-6 shadow-sm mb-4">
+                 <div className="flex items-center gap-2 mb-4">
+                   <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-500 flex items-center justify-center">
+                     <Activity size={16} />
+                   </div>
+                   <span className="text-[10px] font-bold text-rose-400 uppercase tracking-widest">Hormonal & Cycle Health</span>
+                 </div>
+                 <div className="space-y-4">
+                    <div className="flex justify-between items-center bg-white/60 p-4 rounded-2xl">
+                      <div>
+                        <h4 className="font-bold text-rose-900 capitalize text-sm">{cycle.currentPhase} Phase</h4>
+                        <p className="text-xs text-rose-700 font-medium">Day {cycle.daysIntoCycle} of ~{cycle.expectedCycleLength}</p>
+                      </div>
+                      <span className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest ${cycle.currentPhase === 'late' ? 'bg-amber-100 text-amber-700' : 'bg-rose-200 text-rose-800'}`}>
+                        {cycle.currentPhase === 'late' ? 'Delayed' : 'Tracking'}
+                      </span>
+                    </div>
+
+                    {cycle.currentPhase === 'late' && (
+                      <div className="p-4 bg-white border border-amber-200 rounded-2xl">
+                         <p className="text-xs font-bold text-amber-900 mb-1">Irregular Cycle Detected</p>
+                         <p className="text-[10px] text-amber-700 mb-3 font-medium leading-relaxed">
+                           Your baseline biometric data and dates indicate your cycle is delayed. Consider scheduling a teleconsultation.
+                         </p>
+                         <a href="tel:+18001234567" className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-amber-500/20 active:scale-95 transition-transform">
+                            <Phone size={14} /> Talk to Gynecologist
+                         </a>
+                      </div>
+                    )}
+
+                    {/* AI Insights Engine */}
+                    <div className="pt-4 border-t border-rose-200/50">
+                      {!aiInsight && !loadingInsight ? (
+                         <div className="space-y-3">
+                           <button onClick={() => fetchAiInsight(false)} className="w-full py-3 bg-gradient-to-r from-rose-500 to-purple-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-rose-500/30 flex items-center justify-center gap-2 active:scale-95 transition-transform">
+                              <Sparkles size={16} /> Generate AI Cycle Insights
+                           </button>
+                           <div className="flex bg-white border border-rose-200 rounded-xl overflow-hidden focus-within:border-rose-400 focus-within:ring-2 focus-within:ring-rose-100 transition-all">
+                              <input 
+                                type="text" 
+                                value={aiQuestion} 
+                                onChange={e => setAiQuestion(e.target.value)}
+                                placeholder="Or ask Sanjivani AI a tailored question..." 
+                                className="px-3 py-2 text-xs w-full focus:outline-none text-gray-700 bg-transparent placeholder-gray-400"
+                                onKeyDown={e => e.key === 'Enter' && aiQuestion.trim() && fetchAiInsight(true)}
+                              />
+                              <button 
+                                onClick={() => fetchAiInsight(true)}
+                                disabled={loadingInsight || !aiQuestion.trim()}
+                                className="px-4 bg-rose-50 text-rose-600 font-bold text-[10px] uppercase tracking-wider hover:bg-rose-100 disabled:opacity-50 transition-colors"
+                              >
+                                Ask
+                              </button>
+                           </div>
+                         </div>
+                      ) : loadingInsight ? (
+                         <div className="flex items-center justify-center py-4">
+                            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-rose-500"></div>
+                            <span className="ml-3 text-xs font-bold text-rose-500 animate-pulse">Sanjivani AI is analyzing...</span>
+                         </div>
+                      ) : (
+                         <div className="bg-white/80 p-5 rounded-2xl border border-rose-100 shadow-sm relative">
+                           <button onClick={() => setAiInsight(null)} className="absolute top-3 right-3 text-gray-400 bg-gray-50 p-1 rounded-full hover:bg-gray-100 transition-colors">
+                             <X size={14} />
+                           </button>
+                           <h4 className="font-black text-xs text-rose-900 mb-3 flex items-center gap-2"><Sparkles size={14} className="text-purple-500" /> SANJIVANI AI INTELLIGENCE</h4>
+                           <div className="space-y-4">
+                             {aiInsight?.split(/\n\n+/).map((para, idx) => (
+                               <p key={idx} className="text-[10px] text-gray-700 leading-relaxed font-medium">
+                                 {para.split('\n').map((line, i) => (
+                                   <span key={i}>
+                                     {line.includes(':') && line.match(/^[A-Z0-9\s\.\/]+:/) ? (
+                                        <><strong className="text-rose-800 font-bold block mb-0.5 mt-1">{line.split(':')[0]}:</strong>{line.substring(line.indexOf(':')+1)}</>
+                                     ) : line}
+                                     {i < para.split('\n').length - 1 && <br />}
+                                   </span>
+                                 ))}
+                               </p>
+                             ))}
+                           </div>
+                         </div>
+                      )}
+                    </div>
+
+                 </div>
+              </div>
+            )}
 
             {/* Emergency Contacts Section */}
             <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100">

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useMedicationStore } from '../store/medicationStore';
 import { useVitalsStore } from '../store/vitalsStore';
+import { useCycleState } from './useCycleState';
 
 export type DiagnosticLevel = 'safe' | 'warning' | 'critical';
 
@@ -10,6 +11,7 @@ export interface DiagnosticState {
   missedDoses: number;
   hasInteractionRisk: boolean;
   vitalAnomalies: string[];
+  cycleAnomalies: string[];
 }
 
 export function useDiagnosticState() {
@@ -21,8 +23,11 @@ export function useDiagnosticState() {
     reasons: [],
     missedDoses: 0,
     hasInteractionRisk: false,
-    vitalAnomalies: []
+    vitalAnomalies: [],
+    cycleAnomalies: []
   });
+
+  const cycle = useCycleState();
 
   useEffect(() => {
     let newLevel: DiagnosticLevel = 'safe';
@@ -83,15 +88,40 @@ export function useDiagnosticState() {
       reasons.push('All systems optimal. Baseline stable.');
     }
 
+    const cycleAnomalies: string[] = [];
+    if (cycle.isTracking) {
+      const temp = vitals.find(v => v.id === 'temp')?.value || 98.6;
+      
+      if (cycle.currentPhase === 'luteal' && temp < 97.8) {
+        cycleAnomalies.push('Missing expected post-ovulation temperature shift.');
+        reasons.push('Sensors note suppressed BBT relative to the Luteal phase.');
+      }
+      if (cycle.currentPhase === 'late') {
+        cycleAnomalies.push(`Cycle delayed beyond baseline (Day ${cycle.daysIntoCycle}).`);
+        reasons.push('Cycle is irregular or late. Monitor for compounding symptoms.');
+      }
+
+      // Med correlation
+      const hormoneMeds = medications.filter(m => /estro|progest|contracept/i.test(m.brandName || m.genericName));
+      if (hormoneMeds.length > 0 && cycleAnomalies.length > 0) {
+        cycleAnomalies.push('Active medications may be suppressing natural cycle biomarkers.');
+      }
+
+      if (cycleAnomalies.length > 0 && newLevel === 'safe') {
+        newLevel = 'warning'; // Non-critical anomaly, but needs attention
+      }
+    }
+
     setState({
       level: newLevel,
       reasons,
       missedDoses,
       hasInteractionRisk,
-      vitalAnomalies
+      vitalAnomalies,
+      cycleAnomalies
     });
 
-  }, [medications, adherence, vitals]);
+  }, [medications, adherence, vitals, cycle]);
 
   return state;
 }

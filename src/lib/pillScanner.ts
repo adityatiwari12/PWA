@@ -63,8 +63,8 @@ function applyUnsharpMask(src: any): any {
   }
 }
 
-/** Bilateral filter — denoise while preserving edges */
-function applyBilateralDenoise(src: any): any {
+/** Bilateral// Helper to reduce noise while preserving edges
+export function applyBilateralDenoise(src: any): any {
   try {
     const dst = new cv.Mat();
     cv.bilateralFilter(src, dst, 9, 75, 75, cv.BORDER_DEFAULT);
@@ -77,8 +77,8 @@ function applyBilateralDenoise(src: any): any {
   }
 }
 
-/** Morphological cleanup — close tiny gaps in letterforms */
-function applyMorphCleanup(src: any): any {
+// Small morphological opening to drop tiny noise artifacts
+export function applyMorphCleanup(src: any): any {
   try {
     const dst = new cv.Mat();
     const kernel = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(2, 2));

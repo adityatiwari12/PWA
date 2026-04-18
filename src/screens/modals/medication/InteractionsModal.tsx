@@ -14,7 +14,6 @@ export default function InteractionsModal() {
   const { pendingScan, medications, fetchMedications, addMedication, setPendingScan } = useMedicationStore();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchMedications();
@@ -43,7 +42,6 @@ export default function InteractionsModal() {
   const handleAdd = async () => {
     if (!pendingScan) return;
     setIsSaving(true);
-    setError(null);
     
     try {
       const finalMed: Medication = {
@@ -69,7 +67,6 @@ export default function InteractionsModal() {
       navigate('/');
     } catch (err) {
       console.error('Save failed:', err);
-      setError('Database error: Could not save medication locally.');
       setIsSaving(false);
     }
   };

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  CheckCircle2, Clock, ShieldAlert, AlertTriangle, 
-  ShieldCheck, CalendarDays, Zap, Activity, Pill, ChevronRight
+  CheckCircle2, ShieldAlert, AlertTriangle, 
+  ShieldCheck, CalendarDays, Activity, ChevronRight
 } from 'lucide-react';
 import { useMedicationStore } from '../../store/medicationStore';
 import { useVitalsStore } from '../../store/vitalsStore';

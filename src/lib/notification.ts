@@ -1,4 +1,4 @@
-import type { Medication, DoseSchedule } from '../types/medication';
+import type { Medication } from '../types/medication';
 
 class NotificationManager {
   private hasPermission: boolean = false;
@@ -36,7 +36,6 @@ class NotificationManager {
   scheduleFromStore(medications: Medication[]) {
     // Basic implementation: find next dose in the next 24 hours
     const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
     
     medications.forEach(med => {
       if (med.status !== 'active') return;
