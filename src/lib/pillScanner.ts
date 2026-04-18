@@ -92,7 +92,7 @@ function applyMorphCleanup(src: any): any {
 
 /**
  * Full OpenCV pipeline:
- * RGBA → Grayscale → CLAHE → Sharpen → Bilateral Denoise → Morph Cleanup
+ * Balanced for OCR (preserves edges better than aggressive noise removal)
  */
 function preprocessWithOpenCV(sourceCanvas: HTMLCanvasElement): HTMLCanvasElement {
   const src = cv.imread(sourceCanvas);
@@ -100,23 +100,20 @@ function preprocessWithOpenCV(sourceCanvas: HTMLCanvasElement): HTMLCanvasElemen
   cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
   src.delete();
 
+  // 1. Contrast
   const contrasted = applyClahe(gray);
   gray.delete();
 
+  // 2. Sharpen (Critical for small medicine text)
   const sharpened = applyUnsharpMask(contrasted);
   contrasted.delete();
 
-  const denoised = applyBilateralDenoise(sharpened);
-  sharpened.delete();
-
-  const cleaned = applyMorphCleanup(denoised);
-  denoised.delete();
-
+  // Skip aggressive denoising/morphology as it can blur small letters
   const outCanvas = document.createElement('canvas');
   outCanvas.width = sourceCanvas.width;
   outCanvas.height = sourceCanvas.height;
-  cv.imshow(outCanvas, cleaned);
-  cleaned.delete();
+  cv.imshow(outCanvas, sharpened);
+  sharpened.delete();
 
   return outCanvas;
 }
@@ -238,13 +235,13 @@ export async function scanPill(
 ): Promise<ScanResult> {
 
   // Stage 1: Preprocessing
-  onProgress?.({ stage: 'preprocessing', detail: 'Enhancing image…' });
+  onProgress?.({ stage: 'preprocessing', detail: 'Isolating text layers…' });
   const processedImageUrl = await preprocessForVision(dataUrl);
 
   // Stage 2: Multi-tier extraction with local OCR fallback progress
-  onProgress?.({ stage: 'analyzing', detail: 'Analyzing with Vision AI or Local OCR…' });
+  onProgress?.({ stage: 'analyzing', detail: 'Activating Local Engine…' });
   const medication = await extractMedicalEntitiesVision(processedImageUrl, (p) => {
-    onProgress?.({ stage: 'analyzing', detail: `Local OCR Offline Extraction… ${p}%` });
+    onProgress?.({ stage: 'analyzing', detail: `Deep Scan: ${p}%` });
   });
 
   // Stage 3: Confidence scoring

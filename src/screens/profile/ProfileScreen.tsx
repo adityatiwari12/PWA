@@ -12,7 +12,10 @@ import {
   FileText,
   LogOut,
   Stethoscope,
-  Pill
+  Pill,
+  Trash2,
+  PlusCircle,
+  PhoneCall
 } from 'lucide-react';
 import { dbOperations } from '../../lib/db';
 import { useMedicationStore } from '../../store/medicationStore';
@@ -164,7 +167,136 @@ export default function ProfileScreen() {
                   </div>
                 </div>
 
-                {/* Additional simplifed edit fields here if required, minimizing complexity to retain context */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-400 uppercase mb-1.5 ml-1 block">Date of Birth</label>
+                    <input type="date" value={editForm.dateOfBirth} onChange={e => setEditForm({...editForm, dateOfBirth: e.target.value})} className="w-full px-4 py-3 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-teal-500 font-bold text-gray-800" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-400 uppercase mb-1.5 ml-1 block">Blood Type</label>
+                    <select value={editForm.bloodType} onChange={e => setEditForm({...editForm, bloodType: e.target.value as any})} className="w-full px-4 py-3 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-teal-500 font-bold text-gray-800 outline-none">
+                      {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'].map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Tag Editors for Allergies & Conditions */}
+                {['allergies', 'chronicConditions'].map((field) => (
+                  <div key={field}>
+                    <label className="text-[10px] font-bold text-gray-400 uppercase mb-1.5 ml-1 block">
+                      {field === 'allergies' ? 'Allergies' : 'Chronic Conditions'}
+                    </label>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {(editForm[field as keyof UserProfile] as string[]).map((item, idx) => (
+                        <div key={idx} className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 text-teal-700 rounded-xl border border-teal-100 font-bold text-xs capitalize">
+                          {item}
+                          <button onClick={() => {
+                            const arr = [...(editForm[field as keyof UserProfile] as string[])];
+                            arr.splice(idx, 1);
+                            setEditForm({...editForm, [field]: arr});
+                          }}>
+                            <X size={14} className="text-teal-400 hover:text-red-500" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                       <input 
+                         type="text" 
+                         placeholder={`Add ${field === 'allergies' ? 'allergy' : 'condition'}...`}
+                         onKeyDown={(e) => {
+                           if (e.key === 'Enter') {
+                             const val = e.currentTarget.value.trim();
+                             if (val) {
+                               const arr = [...(editForm[field as keyof UserProfile] as string[])];
+                               if (!arr.includes(val)) {
+                                 setEditForm({...editForm, [field]: [...arr, val]});
+                                 e.currentTarget.value = '';
+                               }
+                             }
+                           }
+                         }}
+                         className="flex-1 px-4 py-3 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-teal-500 text-sm font-medium" 
+                       />
+                       <button className="p-3 bg-gray-100 rounded-2xl text-gray-400"><PlusCircle size={20} /></button>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Emergency Contacts Editor */}
+                <div>
+                  <label className="text-[10px] font-bold text-gray-400 uppercase mb-3 ml-1 block">Emergency Network</label>
+                  <div className="space-y-3">
+                    {editForm.emergencyContacts.map((contact, idx) => (
+                      <div key={idx} className="p-4 bg-gray-50 rounded-2xl border border-gray-100 space-y-3 relative">
+                        <button 
+                          onClick={() => {
+                            const arr = [...editForm.emergencyContacts];
+                            arr.splice(idx, 1);
+                            setEditForm({...editForm, emergencyContacts: arr});
+                          }}
+                          className="absolute top-4 right-4 text-gray-300 hover:text-red-500"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                        <input 
+                          type="text" 
+                          value={contact.name} 
+                          placeholder="Contact Name"
+                          onChange={e => {
+                            const arr = [...editForm.emergencyContacts];
+                            arr[idx] = {...arr[idx], name: e.target.value};
+                            setEditForm({...editForm, emergencyContacts: arr});
+                          }}
+                          className="w-full bg-white px-3 py-2 rounded-xl border border-gray-200 text-sm font-bold" 
+                        />
+                        <div className="grid grid-cols-2 gap-2">
+                          <input 
+                            type="text" 
+                            value={contact.relation} 
+                            placeholder="Relation"
+                            onChange={e => {
+                              const arr = [...editForm.emergencyContacts];
+                              arr[idx] = {...arr[idx], relation: e.target.value};
+                              setEditForm({...editForm, emergencyContacts: arr});
+                            }}
+                            className="bg-white px-3 py-2 rounded-xl border border-gray-200 text-xs font-medium" 
+                          />
+                          <input 
+                            type="tel" 
+                            value={contact.phone} 
+                            placeholder="Phone Number"
+                            onChange={e => {
+                              const arr = [...editForm.emergencyContacts];
+                              arr[idx] = {...arr[idx], phone: e.target.value};
+                              setEditForm({...editForm, emergencyContacts: arr});
+                            }}
+                            className="bg-white px-3 py-2 rounded-xl border border-gray-200 text-xs font-medium" 
+                          />
+                        </div>
+                      </div>
+                    ))}
+                    <button 
+                      onClick={() => setEditForm({
+                        ...editForm, 
+                        emergencyContacts: [...editForm.emergencyContacts, { name: '', relation: '', phone: '', isPrimary: false }]
+                      })}
+                      className="w-full py-3 border-2 border-dashed border-gray-200 rounded-2xl text-gray-400 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-gray-50 transition-all"
+                    >
+                      <PlusCircle size={16} /> Add New Contact
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                   <label className="text-[10px] font-bold text-gray-400 uppercase mb-1.5 ml-1 block">Surgeries & History</label>
+                   <textarea 
+                     value={editForm.pastSurgeries?.join(', ') || ''} 
+                     onChange={e => setEditForm({...editForm, pastSurgeries: e.target.value.split(',').map(s => s.trim()).filter(s => s)})}
+                     className="w-full px-4 py-3 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-teal-500 font-medium text-gray-800 text-sm min-h-[100px]"
+                     placeholder="List past surgeries, separated by commas..."
+                   />
+                </div>
              </div>
 
              <button onClick={handleSave} className="w-full mt-4 py-4 bg-teal-500 text-white font-black rounded-2xl shadow-lg active:scale-95 transition-all">

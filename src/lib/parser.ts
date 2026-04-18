@@ -219,6 +219,91 @@ async function runLocalOCR(imageDataUrl: string, onOCRProgress?: (p: number) => 
 }
 
 // ---------------------------------------------------------------------------
+// TIER 0: Local Python Backend (EasyOCR + PubMedBERT)
+// ---------------------------------------------------------------------------
+
+async function refineTextWithGemini(rawText: string, initialData: any): Promise<ParsedMedication> {
+  if (!GEMINI_API_KEY) throw new Error('No API key for refinement');
+
+  const refinementPrompt = `You are an expert clinical pharmacist. I have OCR text from a medicine package.
+The OCR might have typos or be fragmented. RECONSTRUCT the actual product information.
+
+RAW OCR FRAGMENTS: 
+"${rawText}"
+
+STRICT EXTRACTION RULES:
+1. "drug": PRIMARY BRAND NAME (e.g. "Dolo", "Augmentin"). Correct obvious OCR typos.
+2. "dosage": Strength per unit (e.g. "650mg", "500/125mg").
+3. "expiry": Expiry date in MM/YYYY format. If you see "Exp" followed by numbers, parse it.
+4. "manufacturer": The pharmaceutical company.
+
+Return ONLY a raw JSON object: {"drug":"...","dosage":"...","expiry":"...","manufacturer":"..."}`;
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: refinementPrompt }] }],
+        generationConfig: { temperature: 0.1 },
+      }),
+    }
+  );
+
+  if (!response.ok) throw new Error('Gemini Refinement Failed');
+  
+  const data = await response.json();
+  const rawContent = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+  const jsonStr = rawContent.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+  const parsed = JSON.parse(jsonStr);
+  
+  const drugName = parsed.drug && parsed.drug !== 'Unknown' ? parsed.drug : (initialData.drug !== 'Unknown' ? initialData.drug : 'Unknown');
+  const rxResult = await normalizeDrug(drugName);
+
+  return {
+    drug: drugName,
+    genericName: rxResult?.name || drugName,
+    rxcui: rxResult?.rxcui || '',
+    dosage: parsed.dosage || initialData.dosage || null,
+    expiry: parsed.expiry || initialData.expiry || null,
+    manufacturer: parsed.manufacturer || initialData.manufacturer || null,
+    rawText: rawText,
+  };
+}
+
+async function extractWithLocalBackend(imageDataUrl: string): Promise<ParsedMedication> {
+  // Convert to blob
+  const binary = atob(imageDataUrl.split(',')[1]);
+  const array = [];
+  for (let i = 0; i < binary.length; i++) array.push(binary.charCodeAt(i));
+  const blob = new Blob([new Uint8Array(array)], { type: 'image/jpeg' });
+  const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  // Add timeout logic
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
+
+  try {
+    const response = await fetch('http://localhost:8000/extract', {
+      method: 'POST',
+      body: formData,
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) throw new Error(`Server returned ${response.status}`);
+    return await response.json();
+  } catch (err) {
+    clearTimeout(timeoutId);
+    throw err;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // PUBLIC: Main orchestrator
 // ---------------------------------------------------------------------------
 
@@ -227,13 +312,54 @@ export async function extractMedicalEntitiesVision(
   onOCRProgress?: (p: number) => void
 ): Promise<ParsedMedication> {
 
-  // Tier 1: Gemini Vision
+  // Tier 0: Hybrid (Local EasyOCR + Gemini Refinement)
   try {
-    const result = await extractWithGemini(imageDataUrl);
-    if (result.drug && result.drug !== 'Unknown') return result;
-    console.warn('[parser] Gemini returned Unknown drug. Trying Tier 2...');
+    console.log('[Scanner] 🔍 Tier 0: Attempting Local Python Engine (High Accuracy)...');
+    const localResult = await extractWithLocalBackend(imageDataUrl);
+    
+    // Even if localResult.drug is "Unknown", as long as we have rawText, we try to refine it with Gemini's intelligence.
+    if (localResult.rawText && localResult.rawText.trim().length > 3) {
+      try {
+        console.log('[Scanner] 💎 Found local text. Requesting Gemini Refinement...');
+        const refined = await refineTextWithGemini(localResult.rawText, localResult);
+        if (refined.drug !== 'Unknown') {
+          console.log('[Scanner] ⭐ Success! Refined Data:', refined.drug);
+          return refined;
+        }
+        console.warn('[Scanner] Gemini refinement yielded no drug name, continuing fallback...');
+      } catch (refineErr) {
+        console.warn('[Scanner] ⚠️ Gemini Refinement failed, using raw local result if valid.');
+        if (localResult.drug && localResult.drug !== 'Unknown') {
+          const rxResult = await normalizeDrug(localResult.drug);
+          return {
+            ...localResult,
+            genericName: rxResult?.name || localResult.drug,
+            rxcui: rxResult?.rxcui || '',
+          };
+        }
+      }
+    } else {
+      console.warn('[Scanner] ⚠️ Local OCR returned empty text.');
+    }
   } catch (err) {
-    console.error('[parser] Gemini failed or ratelimited (429). Falling back to Tier 2.');
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      console.log('[Scanner] ❌ Local backend timed out (20s).');
+    } else {
+      console.log('[Scanner] ❌ Local backend unavailable (Check if main.py is running):', err);
+    }
+  }
+
+  // Tier 1: Gemini Vision (Cloud)
+  try {
+    console.log('[Scanner] ☁️ Tier 1: Falling back to Gemini Vision...');
+    const result = await extractWithGemini(imageDataUrl);
+    if (result.drug && result.drug !== 'Unknown') {
+      console.log('[Scanner] ⭐ Success via Gemini Vision:', result.drug);
+      return result;
+    }
+    console.warn('[Scanner] ⚠️ Gemini Vision returned Unknown drug. Trying Tier 2...');
+  } catch (err) {
+    console.error('[Scanner] ❌ Gemini Vision failed:', err);
   }
 
   // Tier 2: Free Cloud OCR
