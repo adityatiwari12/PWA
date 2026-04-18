@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react';
-import { Camera as CameraIcon, RefreshCw } from 'lucide-react';
+import { Camera as CameraIcon, RefreshCw, Zap, ZapOff } from 'lucide-react';
 
 interface CameraViewProps {
   onCapture: (imageDataUrl: string) => void;
@@ -8,23 +8,56 @@ interface CameraViewProps {
 export interface CameraViewActions {
   capture: () => void;
   getFrame: () => string | null;
+  toggleTorch: () => void;
 }
 
 const CameraView = forwardRef<CameraViewActions, CameraViewProps>(({ onCapture }, ref) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [hasStarted, setHasStarted] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [torchOn, setTorchOn] = useState(false);
+  const [supportsTorch, setSupportsTorch] = useState(false);
 
   // Initialize camera
   useEffect(() => {
-    let stream: MediaStream | null = null;
-    
     const startCamera = async () => {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } } 
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { 
+            facingMode: 'environment', 
+            width: { ideal: 1920 }, 
+            height: { ideal: 1080 },
+            // Advanced focus constraints
+            // @ts-ignore
+            focusMode: 'continuous',
+          } 
         });
+        
+        streamRef.current = stream;
+        const track = stream.getVideoTracks()[0];
+        
+        // Check hardware capabilities
+        if (track.getCapabilities) {
+          const capabilities = track.getCapabilities();
+          // @ts-ignore
+          setSupportsTorch(!!capabilities.torch);
+          
+          // Apply continuous focus if supported
+          try {
+            await track.applyConstraints({
+              // @ts-ignore
+              advanced: [
+                { focusMode: 'continuous' },
+                { whiteBalanceMode: 'continuous' },
+                { exposureMode: 'continuous' }
+              ]
+            } as any);
+          } catch (e) {
+            console.warn("Advanced camera constraints not supported", e);
+          }
+        }
         
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -39,13 +72,27 @@ const CameraView = forwardRef<CameraViewActions, CameraViewProps>(({ onCapture }
 
     startCamera();
 
-    // Cleanup stream on unmount
     return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
       }
     };
   }, []);
+
+  const toggleTorch = useCallback(async () => {
+    if (!streamRef.current || !supportsTorch) return;
+    const track = streamRef.current.getVideoTracks()[0];
+    try {
+      const newTorchState = !torchOn;
+      // @ts-ignore
+      await track.applyConstraints({
+        advanced: [{ torch: newTorchState }]
+      } as any);
+      setTorchOn(newTorchState);
+    } catch (err) {
+      console.error("Failed to toggle torch:", err);
+    }
+  }, [torchOn, supportsTorch]);
 
   const captureFrame = useCallback(() => {
     if (!videoRef.current || !canvasRef.current) return;
@@ -67,28 +114,29 @@ const CameraView = forwardRef<CameraViewActions, CameraViewProps>(({ onCapture }
     if (!videoRef.current || !canvasRef.current) return null;
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    if (video.readyState !== 4) return null; // Ensure video is playing
+    if (video.readyState !== 4) return null;
     const context = canvas.getContext('2d');
     if (context) {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      return canvas.toDataURL('image/jpeg', 0.5); // Fast, low-quality frame for detection
+      return canvas.toDataURL('image/jpeg', 0.5);
     }
     return null;
   }, []);
 
   useImperativeHandle(ref, () => ({
     capture: captureFrame,
-    getFrame
+    getFrame,
+    toggleTorch
   }));
 
   return (
-    <div className="relative w-full h-full bg-black flex items-center justify-center">
+    <div className="relative w-full h-full bg-black flex items-center justify-center overflow-hidden">
       {!hasStarted && !errorMsg && (
         <div className="absolute inset-0 flex items-center justify-center text-white z-10 flex-col bg-black">
           <RefreshCw className="animate-spin mb-4" size={32} />
-          <p className="text-sm font-bold tracking-widest uppercase">Initializing Camera...</p>
+          <p className="text-sm font-bold tracking-widest uppercase">Initializing Medical Vision...</p>
         </div>
       )}
 
@@ -97,7 +145,7 @@ const CameraView = forwardRef<CameraViewActions, CameraViewProps>(({ onCapture }
           <div className="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mb-4">
             <CameraIcon size={32} />
           </div>
-          <p className="text-red-400 font-bold mb-2 uppercase text-xs tracking-widest">Camera Error</p>
+          <p className="text-red-400 font-bold mb-2 uppercase text-xs tracking-widest">Vision Error</p>
           <p className="text-sm text-gray-500">{errorMsg}</p>
         </div>
       )}
@@ -108,8 +156,25 @@ const CameraView = forwardRef<CameraViewActions, CameraViewProps>(({ onCapture }
         playsInline 
         muted 
       />
+
+      {/* Overlay - Focus Guide */}
+      <div className="absolute inset-0 border-2 border-white/20 pointer-events-none rounded-2xl m-8">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-48 h-48 border border-white/40 rounded-full animate-pulse-slow" />
+        </div>
+      </div>
+
+      {hasStarted && supportsTorch && (
+        <button
+          onClick={toggleTorch}
+          className={`absolute bottom-24 right-6 w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+            torchOn ? 'bg-yellow-400 text-black shadow-[0_0_20px_rgba(250,204,21,0.5)]' : 'bg-black/40 text-white backdrop-blur-md border border-white/20'
+          }`}
+        >
+          {torchOn ? <Zap size={20} fill="currentColor" /> : <ZapOff size={20} />}
+        </button>
+      )}
       
-      {/* Hidden canvas for capturing frames */}
       <canvas ref={canvasRef} className="hidden" />
     </div>
   );

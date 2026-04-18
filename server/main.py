@@ -1,5 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import easyocr
 import torch
 from transformers import AutoTokenizer, pipeline
@@ -113,7 +115,7 @@ async def refine_with_gemini(raw_text: str):
         print(f"  ! Gemini Refinement Failed: {e}")
         return None
 
-@app.post("/extract")
+@app.post("/api/extract")
 async def extract_medication(file: UploadFile = File(...)):
     start_time = time.time()
     print(f"\n[WATERFALL START] Processing Image: {file.filename}")
@@ -181,10 +183,42 @@ async def extract_medication(file: UploadFile = File(...)):
         traceback.print_exc()
         raise HTTPException(status_code=500, detail="Local pipeline engine failure")
 
-@app.get("/health")
+@app.get("/api/health")
 async def health():
     return {"status": "ready", "device": device, "gemini_active": llm_model is not None}
 
+# Mount static files and SPA Catch-all
+import os
+
+frontend_dist = os.path.join(os.path.dirname(__file__), "..", "dist")
+
+if os.path.isdir(frontend_dist):
+    # Serve static assets
+    app.mount("/assets", StaticFiles(directory=os.path.join(frontend_dist, "assets")), name="assets")
+    
+    # Optional: Serve other root files if needed (manifest.json, etc.)
+    # We will use a catch-all for everything else
+
+    @app.get("/{full_path:path}")
+    async def serve_pwa(full_path: str):
+        # Allow requests to /api to pass through to the actual API, shouldn't hit here due to routing order, but just in case
+        if full_path.startswith("api/"):
+            raise HTTPException(status_code=404, detail="API route not found")
+        
+        # Serve specific requested files if they exist (like manifest.webmanifest, favicon)
+        file_path = os.path.join(frontend_dist, full_path)
+        if os.path.isfile(file_path):
+            return FileResponse(file_path)
+            
+        # Default to index.html for SPA routing
+        index_path = os.path.join(frontend_dist, "index.html")
+        if os.path.isfile(index_path):
+             return FileResponse(index_path)
+        return {"error": "Frontend build not found. Run npm run build."}
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    import os
+    port = int(os.environ.get("PORT", 8000))
+    host = os.environ.get("HOST", "0.0.0.0")
+    uvicorn.run(app, host=host, port=port)

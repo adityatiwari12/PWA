@@ -495,7 +495,7 @@ export default function ProfileScreen() {
               </div>
             )}
 
-            {/* Emergency Contacts Section */}
+            {/* Emergency Network Section */}
             <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100">
                <div className="flex items-center gap-2 mb-4">
                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center">

@@ -12,6 +12,7 @@ export interface DiagnosticState {
   hasInteractionRisk: boolean;
   vitalAnomalies: string[];
   cycleAnomalies: string[];
+  isPCODRisk?: boolean;
 }
 
 export function useDiagnosticState() {
@@ -24,7 +25,8 @@ export function useDiagnosticState() {
     missedDoses: 0,
     hasInteractionRisk: false,
     vitalAnomalies: [],
-    cycleAnomalies: []
+    cycleAnomalies: [],
+    isPCODRisk: false
   });
 
   const cycle = useCycleState();
@@ -84,6 +86,14 @@ export function useDiagnosticState() {
       }
     });
 
+    // 4. Female Health / PCOD Risk
+    let isPCODRisk = false;
+    if (cycle.isTracking && cycle.currentPhase === 'late' && cycle.daysIntoCycle > cycle.expectedCycleLength + 5) {
+      isPCODRisk = true;
+      if (newLevel !== 'critical') newLevel = 'warning';
+      reasons.push('High PCOD/PCOS risk detected due to significantly delayed cycle.');
+    }
+
     if (newLevel === 'safe' && reasons.length === 0) {
       reasons.push('All systems optimal. Baseline stable.');
     }
@@ -118,7 +128,8 @@ export function useDiagnosticState() {
       missedDoses,
       hasInteractionRisk,
       vitalAnomalies,
-      cycleAnomalies
+      cycleAnomalies,
+      isPCODRisk
     });
 
   }, [medications, adherence, vitals, cycle]);

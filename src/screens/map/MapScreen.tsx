@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMedicationStore } from '../../store/medicationStore';
 import { useDiagnosticState } from '../../hooks/useDiagnosticState';
 import { HOSPITAL_LIST, JAN_AUSHADHI_KENDRA_LIST } from '../../lib/janAushadhiDataset';
+import { findGenericSubstitutes, formatSavingsString } from '../../lib/healthDiscovery';
 
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
@@ -46,6 +47,11 @@ type Place = {
   specialties?: string[];
   specialtyMatch?: boolean;
   specialtyName?: string;
+  ayushmanAccepted?: boolean;
+  basicServices?: string[];
+  savings?: string;
+  brandedPrice?: number;
+  genericPrice?: number;
 };
 
 // Component to dynamically pan the map
@@ -104,10 +110,35 @@ export default function MapScreen() {
        targetSpecialty = 'Pulmonology ER';
     }
 
-    // Add Real Hospitals
+    // Add Real Jan Aushadhi Kendras
+    JAN_AUSHADHI_KENDRA_LIST.forEach(k => {
+      const dist = calculateDistance(lat, lng, k.coordinates.lat, k.coordinates.lng);
+      if (dist <= 50) {
+        // Match with current medications
+        const matches = findGenericSubstitutes(medications, [k]);
+        const primaryMatch = matches.length > 0 ? matches[0] : null;
+
+        newPlaces.push({
+          ...k,
+          type: 'jan_aushadhi',
+          lat: k.coordinates.lat,
+          lng: k.coordinates.lng,
+          distanceKm: dist.toFixed(1),
+          hasDrug: !!primaryMatch,
+          drugName: primaryMatch ? primaryMatch.janAushadhiEquivalent.genericName : undefined,
+          price: primaryMatch ? `₹${primaryMatch.janAushadhiEquivalent.mrp}` : undefined,
+          savings: primaryMatch ? formatSavingsString(primaryMatch.savings, primaryMatch.janAushadhiEquivalent.marketPrice) : undefined,
+          brandedPrice: primaryMatch ? primaryMatch.janAushadhiEquivalent.marketPrice : undefined,
+          rating: 4.5,
+          openTill: '08:00 PM'
+        });
+      }
+    });
+
+    // Add Real Hospitals with Ayushman data
     HOSPITAL_LIST.forEach(h => {
       const dist = calculateDistance(lat, lng, h.coordinates.lat, h.coordinates.lng);
-      if (dist <= 20) {
+      if (dist <= 50) {
         const isSpecialtyMatch = h.specialties.includes(targetSpecialty);
         newPlaces.push({
           ...h,
@@ -116,26 +147,9 @@ export default function MapScreen() {
           lng: h.coordinates.lng,
           distanceKm: dist.toFixed(1),
           specialtyMatch: isSpecialtyMatch,
-          specialtyName: isSpecialtyMatch ? targetSpecialty : 'General ER'
-        });
-      }
-    });
-
-    // Add Real Jan Aushadhi Kendras
-    JAN_AUSHADHI_KENDRA_LIST.forEach(k => {
-      const dist = calculateDistance(lat, lng, k.coordinates.lat, k.coordinates.lng);
-      if (dist <= 20) {
-        newPlaces.push({
-          ...k,
-          type: 'jan_aushadhi',
-          lat: k.coordinates.lat,
-          lng: k.coordinates.lng,
-          distanceKm: dist.toFixed(1),
-          hasDrug: Math.random() > 0.3,
-          drugName: neededDrug,
-          price: `₹${Math.floor(Math.random() * 40 + 10)} (80% less)`,
-          rating: 4.0 + Math.random(),
-          openTill: '09:00 PM'
+          specialtyName: isSpecialtyMatch ? targetSpecialty : 'General ER',
+          ayushmanAccepted: h.ayushmanAccepted,
+          basicServices: h.basicServices
         });
       }
     });
@@ -189,7 +203,7 @@ export default function MapScreen() {
           }
         },
         (err) => console.error("Tracking error", err),
-        { enableHighAccuracy: true, distanceFilter: 10 }
+        { enableHighAccuracy: true }
       );
       setWatchId(id);
       return () => {
@@ -319,7 +333,7 @@ export default function MapScreen() {
                   (isEmergency && selectedPlace.specialtyMatch) ? 'bg-red-600 text-white animate-pulse' : 'bg-amber-100 text-amber-700'
                 }`}>
                   {selectedPlace.type === 'jan_aushadhi' ? 'Govt Pharmacy' : 
-                   (isEmergency && selectedPlace.specialtyMatch) ? 'URGENT MATCH DETECTED' : 'Ayushman Hospital'}
+                   (isEmergency && selectedPlace.specialtyMatch) ? 'URGENT MATCH DETECTED' : (selectedPlace.ayushmanAccepted ? 'Ayushman Accepted ✓' : 'Hospital')}
                 </div>
                 <h3 className="font-black text-2xl text-gray-900 leading-none mb-1">
                   {selectedPlace.name}
@@ -385,18 +399,39 @@ export default function MapScreen() {
                 <p className="text-[10px] uppercase font-black text-emerald-800 tracking-widest mb-1 flex items-center gap-1">
                   <MapPin size={12} /> Live Inventory Sync
                 </p>
-                <div className="flex items-center justify-between mt-2">
-                   <span className="text-sm font-bold text-emerald-900">{neededDrug}</span>
-                   {selectedPlace.hasDrug ? (
-                     <span className="text-xs font-black bg-emerald-600 text-white px-2 py-1 rounded-lg">
-                       IN STOCK: {selectedPlace.price}
-                     </span>
-                   ) : (
-                     <span className="text-xs font-black text-red-500 bg-red-100 px-2 py-1 rounded-lg">
-                       OUT OF STOCK
-                     </span>
+                <div className="flex flex-col mt-2">
+                   <div className="flex items-center justify-between">
+                     <span className="text-sm font-bold text-emerald-900 capitalize">{selectedPlace.drugName || 'Generic Substitutes'}</span>
+                     {selectedPlace.hasDrug ? (
+                       <span className="text-xs font-black bg-emerald-600 text-white px-2 py-1 rounded-lg">
+                         JAN AUSHADHI PRICE: {selectedPlace.price}
+                       </span>
+                     ) : (
+                       <span className="text-xs font-black text-gray-400 bg-gray-100 px-2 py-1 rounded-lg uppercase tracking-tight">
+                         CHECK IN-STORE
+                       </span>
+                     )}
+                   </div>
+                   {selectedPlace.hasDrug && (
+                     <div className="mt-2 flex items-center justify-between border-t border-emerald-100 pt-2">
+                        <span className="text-[10px] text-emerald-700 font-bold">Standard Market Price: <span className="line-through text-gray-400">₹{selectedPlace.brandedPrice}</span></span>
+                        <span className="text-[10px] text-emerald-800 font-black uppercase bg-emerald-100/50 px-2 py-0.5 rounded-full">{selectedPlace.savings}</span>
+                     </div>
                    )}
                 </div>
+              </div>
+            )}
+
+            {selectedPlace.type === 'hospital' && selectedPlace.ayushmanAccepted && (
+              <div className="p-4 bg-blue-50 rounded-3xl border border-blue-100 mb-4">
+                 <p className="text-[10px] uppercase font-black text-blue-800 tracking-widest mb-2">Available Services (Ayushman Bharat)</p>
+                 <div className="flex flex-wrap gap-2">
+                    {selectedPlace.basicServices?.map(service => (
+                      <span key={service} className="text-[9px] font-bold bg-white text-blue-600 px-2 py-1 rounded-lg border border-blue-100">
+                        {service}
+                      </span>
+                    ))}
+                 </div>
               </div>
             )}
 

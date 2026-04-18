@@ -299,7 +299,9 @@ async function extractWithLocalBackend(imageDataUrl: string): Promise<ParsedMedi
   const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
 
   try {
-    const response = await fetch('http://localhost:8000/extract', {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || '';
+    const endpoint = `${backendUrl}/api/extract`;
+    const response = await fetch(endpoint, {
       method: 'POST',
       body: formData,
       signal: controller.signal
