@@ -214,58 +214,6 @@ export const JAN_AUSHADHI_KENDRA_LIST: ExtendedKendra[] = [
  */
 export const HOSPITAL_LIST: ExtendedHospital[] = [
   {
-    id: 'H-001',
-    name: 'AIIMS New Delhi',
-    address: 'Ansari Nagar, New Delhi',
-    phone: '011-26588500',
-    coordinates: { lat: 28.5672, lng: 77.2100 },
-    specialties: ['Cardiology ER', 'Neurology', 'Oncology', 'General ER'],
-    rating: 4.8,
-    openTill: '24/7',
-    waitTime: 45,
-    ayushmanAccepted: true,
-    basicServices: ['Emergency Care', 'Dialysis', 'Surgery', 'Maternity']
-  },
-  {
-    id: 'H-002',
-    name: 'Safdarjung Hospital',
-    address: 'Ansari Nagar East, New Delhi',
-    phone: '011-26707100',
-    coordinates: { lat: 28.5683, lng: 77.2064 },
-    specialties: ['Burn Unit', 'Pulmonology ER', 'Toxicology / ER', 'General ER'],
-    rating: 4.2,
-    openTill: '24/7',
-    waitTime: 60,
-    ayushmanAccepted: true,
-    basicServices: ['Trauma Center', 'General Medicine', 'Ophthalmology']
-  },
-  {
-    id: 'H-003',
-    name: 'Max Super Speciality, Saket',
-    address: '1, 2, Press Enclave Road, Saket, New Delhi',
-    phone: '011-26515050',
-    coordinates: { lat: 28.5284, lng: 77.2197 },
-    specialties: ['Cardiology ER', 'Orthopaedics', 'Pediatrics'],
-    rating: 4.5,
-    openTill: '24/7',
-    waitTime: 15,
-    ayushmanAccepted: false,
-    basicServices: ['Advanced Cardiology', 'Joint Replacement', 'ICU']
-  },
-  {
-    id: 'H-004',
-    name: 'Sir Ganga Ram Hospital',
-    address: 'Old Rajinder Nagar, New Delhi',
-    phone: '011-25750000',
-    coordinates: { lat: 28.6385, lng: 77.1895 },
-    specialties: ['General ER', 'Gastroenterology', 'Nephrology'],
-    rating: 4.6,
-    openTill: '24/7',
-    waitTime: 30,
-    ayushmanAccepted: true,
-    basicServices: ['Liver Transplant', 'Critical Care', 'Gynaecology']
-  },
-  {
     id: 'H-005',
     name: 'Choithram Hospital & Research Centre',
     address: 'Manik Bagh Road, Indore',

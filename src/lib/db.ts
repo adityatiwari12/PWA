@@ -34,7 +34,7 @@ export const db = new MedScannerDB();
 
 export const dbOperations = {
   async addMedication(medication: Medication) {
-    await db.medicines.add(medication);
+    await db.medicines.put(medication);
     return medication.id;
   },
 

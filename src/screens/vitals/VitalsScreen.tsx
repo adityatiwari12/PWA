@@ -1,29 +1,70 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Activity, 
   BrainCircuit, 
   TrendingUp, 
   TrendingDown,
   Thermometer,
-  Zap,
-  Wind,
-  Droplets,
-  Heart,
-  AlertTriangle
+  Send,
+  AlertTriangle,
+  Bot
 } from 'lucide-react';
 import { useMedicationStore } from '../../store/medicationStore';
 import { useVitalsStore } from '../../store/vitalsStore';
 import { useDiagnosticState } from '../../hooks/useDiagnosticState';
+import { generateVitalsChatResponse } from '../../lib/gemini';
+import { dbOperations } from '../../lib/db';
+import type { UserProfile } from '../../types/user';
+
+interface ChatMessage {
+  role: 'user' | 'model';
+  content: string;
+}
 
 export default function VitalsScreen() {
   const { medications } = useMedicationStore();
   const { vitals, startSimulation } = useVitalsStore();
   const diagnostic = useDiagnosticState();
+  
   const [activeTab, setActiveTab] = useState<'overview' | 'analysis'>('overview');
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  
+  // Chatbot State
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     startSimulation();
+    dbOperations.getUserProfile().then(p => setUserProfile(p || null));
   }, [startSimulation]);
+
+  useEffect(() => {
+    if (activeTab === 'analysis') {
+      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatHistory, activeTab]);
+
+  const handleSendMessage = async () => {
+    if (!chatInput.trim() || isTyping) return;
+    
+    const userMessage = chatInput.trim();
+    setChatInput('');
+    setChatHistory(prev => [...prev, { role: 'user', content: userMessage }]);
+    setIsTyping(true);
+
+    const response = await generateVitalsChatResponse(
+      userMessage,
+      userProfile,
+      vitals,
+      medications.filter(m => m.status === 'active'),
+      chatHistory
+    );
+
+    setChatHistory(prev => [...prev, { role: 'model', content: response }]);
+    setIsTyping(false);
+  };
 
   return (
     <div className="flex flex-col min-h-full bg-white pb-32">
@@ -88,7 +129,6 @@ export default function VitalsScreen() {
                 >
                   <div className="flex justify-between items-start mb-2">
                      <div className={isHRV ? 'text-amber-500' : 'text-gray-600'}>
-                       {/* Stroke-only small icon */}
                        <v.icon size={20} strokeWidth={2} />
                      </div>
                      <div>
@@ -132,6 +172,7 @@ export default function VitalsScreen() {
         {activeTab === 'analysis' && (
           <div className="space-y-4">
             
+            {/* Engine Overview */}
             <div className="bg-white border border-gray-200 rounded-[16px] p-5 shadow-sm relative overflow-hidden">
               <div className="flex items-center gap-2 mb-3">
                 <BrainCircuit className="text-red-500" size={20} />
@@ -144,6 +185,7 @@ export default function VitalsScreen() {
               </p>
             </div>
 
+            {/* AI Action/Warning Feedback */}
             {diagnostic.vitalAnomalies.length > 0 && medications.length > 0 ? (
                <div className="space-y-3">
                  <h3 className="text-[11px] font-bold text-red-500 uppercase tracking-widest mt-6 mb-2 ml-1">
@@ -172,13 +214,74 @@ export default function VitalsScreen() {
                     </p>
                  </div>
                </div>
-            ) : (
-              <div className="bg-gray-50 border border-gray-100 rounded-[16px] p-6 text-center mt-6">
-                 <Thermometer className="text-gray-400 mx-auto mb-3" size={24} />
-                 <p className="text-sm font-bold text-gray-700">Stack is Empty</p>
-                 <p className="text-[11px] text-gray-500 uppercase font-medium tracking-widest mt-1">Add medications to analyze correlations</p>
-              </div>
-            )}
+            ) : null}
+
+            {/* Chatbot Interface */}
+            <div className="mt-8 pt-6 border-t border-gray-100">
+               <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-4 ml-1 flex items-center gap-2">
+                 <Bot size={14} /> Clinical Intelligence Chat
+               </h3>
+               
+               <div className="bg-[#F7F8FA] rounded-[16px] border border-gray-200 flex flex-col h-[300px] overflow-hidden">
+                 {/* Chat History */}
+                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                   {chatHistory.length === 0 ? (
+                     <div className="text-center mt-6">
+                       <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mx-auto mb-2 border border-gray-200 shadow-sm">
+                         <BrainCircuit size={20} className="text-teal-500" />
+                       </div>
+                       <p className="text-[12px] font-medium text-gray-500 px-4">
+                         I monitor your live vitals and profile. Ask me anything about your current health state or medications.
+                       </p>
+                     </div>
+                   ) : (
+                     chatHistory.map((msg, i) => (
+                       <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                         <div className={`max-w-[85%] rounded-[12px] px-4 py-2.5 text-[13px] ${
+                           msg.role === 'user' 
+                             ? 'bg-gray-900 text-white font-medium rounded-tr-sm' 
+                             : 'bg-white border border-gray-200 text-gray-700 leading-relaxed rounded-tl-sm shadow-sm'
+                         }`}>
+                           {msg.content}
+                         </div>
+                       </div>
+                     ))
+                   )}
+                   
+                   {isTyping && (
+                     <div className="flex justify-start">
+                       <div className="bg-white border border-gray-200 rounded-[12px] rounded-tl-sm px-4 py-3 shadow-sm flex items-center gap-1.5">
+                         <span className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                         <span className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                         <span className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce"></span>
+                       </div>
+                     </div>
+                   )}
+                   <div ref={chatEndRef} />
+                 </div>
+
+                 {/* Chat Input */}
+                 <div className="bg-white border-t border-gray-200 p-3">
+                   <div className="flex bg-[#F7F8FA] rounded-[12px] border border-gray-200 focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-100 transition-all">
+                     <input 
+                       type="text"
+                       value={chatInput}
+                       onChange={e => setChatInput(e.target.value)}
+                       onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
+                       placeholder="Ask about your vitals..."
+                       className="flex-1 bg-transparent px-4 py-2.5 text-[13px] text-gray-800 outline-none placeholder-gray-400"
+                     />
+                     <button 
+                       onClick={handleSendMessage}
+                       disabled={isTyping || !chatInput.trim()}
+                       className="px-3 text-teal-600 disabled:opacity-30 active:scale-95 transition-all"
+                     >
+                       <Send size={18} />
+                     </button>
+                   </div>
+                 </div>
+               </div>
+            </div>
             
           </div>
         )}

@@ -5,7 +5,7 @@ import {
   ArrowLeft, ShieldCheck, ShieldAlert, Loader2 
 } from 'lucide-react';
 import { useMedicationStore } from '../../../store/medicationStore';
-import { checkOpenFdaInteractions } from '../../../lib/openFDA';
+import { checkDrugInteractions } from '../../../lib/gemini';
 import InteractionFlag from '../../../components/InteractionFlag';
 import type { Medication, InteractionCheckResult } from '../../../types/medication';
 
@@ -23,17 +23,9 @@ export default function InteractionsModal() {
     queryFn: async () => {
       if (!pendingScan?.genericName) return [];
       const existingNames = medications.map(m => m.genericName || m.brandName);
-      const results = await checkOpenFdaInteractions(pendingScan.genericName, existingNames);
+      const results = await checkDrugInteractions(pendingScan.genericName, existingNames);
       
-      // Convert to app-specific result type
-      return results.map(r => ({
-        checkedAt: Date.now(),
-        interactingDrugId: 'unknown',
-        interactingDrugName: r.description.split('with ')[1]?.split(':')[0] || 'Unknown',
-        severity: r.severity,
-        description: r.description,
-        source: 'openfda' as const
-      })) as InteractionCheckResult[];
+      return results;
     },
     enabled: !!pendingScan?.genericName,
   });
@@ -44,7 +36,7 @@ export default function InteractionsModal() {
     
     try {
       const finalMed: Medication = {
-        id: crypto.randomUUID(),
+        id: pendingScan.id || crypto.randomUUID(),
         brandName: pendingScan.brandName || 'Unknown',
         genericName: pendingScan.genericName || 'Unknown',
         rxcui: pendingScan.rxcui,
@@ -53,7 +45,7 @@ export default function InteractionsModal() {
         rawText: pendingScan.rawText,
         schedule: pendingScan.schedule || [],
         status: 'active',
-        addedAt: Date.now(),
+        addedAt: pendingScan.addedAt || Date.now(),
         interactionLog: alerts || []
       };
 

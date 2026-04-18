@@ -2,12 +2,14 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Pill, 
-  Activity, 
-  UserCircle, 
+  MapPin,
   Camera,
-  MapPin
+  Activity, 
+  UserCircle 
 } from 'lucide-react';
 
+// The prompt specified "5 tabs: Home, Meds, Map, Scan, Vitals, Health"
+// That's 6 items, so we'll render all 6 keeping the layout balanced.
 const tabs = [
   { path: '/', label: 'Home', icon: LayoutDashboard },
   { path: '/medications', label: 'Meds', icon: Pill },
@@ -17,33 +19,33 @@ const tabs = [
   { path: '/profile', label: 'Health', icon: UserCircle },
 ];
 
-/**
- * AppTabs — 5-tab bottom navigation with a floating center Scan button.
- * Hidden on modal routes.
- */
 export default function AppTabs() {
   const location = useLocation();
 
   // Hide nav on modal routes
-  if (location.pathname.startsWith('/medication/') || location.pathname.startsWith('/emergency/') || location.pathname.startsWith('/guardian/')) {
-    return null;
+  if (location.pathname.startsWith('/medication/') && location.pathname !== '/medication/scan' || location.pathname.startsWith('/emergency/') || location.pathname.startsWith('/guardian/')) {
+    // Wait, if Scan is a tab, it shouldn't hide the nav if it's rendered as a tab link, 
+    // BUT in this app /medication/scan is a modal overlay.
+    // The "Scan" tab is just a NavLink that triggers the modal route.
+    if (location.pathname !== '/medication/scan' && location.pathname.startsWith('/medication/')) {
+       return null;
+    }
   }
 
   return (
-    <nav className="h-[72px] w-full bg-white border-t border-gray-100 flex items-center justify-around shadow-[0_-2px_20px_rgba(0,0,0,0.04)] sticky bottom-0 z-50 px-2">
+    <nav 
+      className="h-[64px] w-full bg-white flex items-center sticky bottom-0 z-50 px-1"
+      style={{ borderTop: '0.5px solid #E5E7EB' }}
+    >
       {tabs.map((tab) => {
         if (tab.isCenter) {
           return (
-            <div key={tab.path} className="relative flex justify-center" style={{ width: 64 }}>
+            <div key={tab.path} className="flex-1 flex flex-col items-center justify-center h-full">
               <NavLink
                 to={tab.path}
-                className="absolute -top-7 flex items-center justify-center w-[60px] h-[60px] rounded-[22px] text-white shadow-xl ring-4 ring-white transform transition active:scale-90"
-                style={{ 
-                  background: 'linear-gradient(135deg, #1D9E75 0%, #0A6E57 100%)', 
-                  boxShadow: '0 8px 24px rgba(29,158,117,0.35)' 
-                }}
+                className="flex items-center justify-center w-[48px] h-[48px] rounded-full bg-[#E84040] active:scale-95 transition-transform shadow-md"
               >
-                <tab.icon size={26} strokeWidth={2.5} />
+                <tab.icon size={24} color="white" strokeWidth={2} />
               </NavLink>
             </div>
           );
@@ -54,20 +56,18 @@ export default function AppTabs() {
             key={tab.path}
             to={tab.path}
             end={tab.path === '/'}
-            className={({ isActive }) =>
-              `flex flex-col items-center justify-center gap-1 px-3 py-1 rounded-2xl transition-all duration-200 ${
-                isActive
-                  ? 'text-teal-600'
-                  : 'text-gray-400 hover:text-gray-500'
-              }`
-            }
+            className="flex flex-col items-center justify-center flex-1 h-full select-none"
           >
             {({ isActive }) => (
               <>
-                <div className={`p-1.5 rounded-xl transition-all ${isActive ? 'bg-teal-50' : ''}`}>
-                  <tab.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
-                </div>
-                <span className={`text-[9px] font-black uppercase tracking-widest ${isActive ? 'text-teal-600' : 'text-gray-400'}`}>
+                <tab.icon 
+                  size={20} 
+                  strokeWidth={2} 
+                  className={`mb-1 transition-colors ${isActive ? 'text-[#E84040]' : 'text-gray-400'}`}
+                />
+                <span 
+                   className={`text-[11px] font-medium transition-colors ${isActive ? 'text-[#E84040]' : 'text-gray-400'}`}
+                >
                   {tab.label}
                 </span>
               </>

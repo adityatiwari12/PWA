@@ -1,8 +1,6 @@
 import { useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { 
-  Pill, Plus, Clock, AlertTriangle, Archive, ChevronRight, Share2, Activity
-} from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Pill, Plus, Clock, AlertTriangle, Archive, ChevronRight, Share2, Activity, Trash2, Edit3 } from 'lucide-react';
 import { useMedicationStore } from '../../store/medicationStore';
 import { useDiagnosticState } from '../../hooks/useDiagnosticState';
 /**
@@ -10,8 +8,9 @@ import { useDiagnosticState } from '../../hooks/useDiagnosticState';
  * Upgraded to a state-driven structure indicating interaction graphs based on new_task.md
  */
 export default function MedicationsScreen() {
-  const { medications, fetchMedications, adherence } = useMedicationStore();
+  const { medications, fetchMedications, adherence, removeMedication } = useMedicationStore();
   const diagnostic = useDiagnosticState();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchMedications();
@@ -198,7 +197,27 @@ export default function MedicationsScreen() {
                           )}
                         </div>
                       </div>
-                      <ChevronRight size={16} className={hasConflict ? 'text-red-300' : 'text-gray-300'} />
+                      <div className="flex flex-col items-end gap-2 ml-2 border-l border-gray-100 pl-4 py-1">
+                         <button
+                           onClick={() => {
+                              useMedicationStore.getState().setPendingScan(med);
+                              navigate('/medication/confirm');
+                           }}
+                           className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center active:scale-90 transition-transform shadow-sm"
+                         >
+                           <Edit3 size={14} />
+                         </button>
+                         <button 
+                           onClick={() => {
+                              if (window.confirm('Remove this medication from your stack?')) {
+                                 removeMedication(med.id);
+                              }
+                           }}
+                           className="w-8 h-8 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center active:scale-90 transition-transform shadow-sm"
+                         >
+                           <Trash2 size={14} />
+                         </button>
+                      </div>
                     </div>
                   );
                 })}
