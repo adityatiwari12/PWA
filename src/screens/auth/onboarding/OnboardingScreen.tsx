@@ -137,6 +137,30 @@ export default function OnboardingScreen() {
       } : {})
     };
     await dbOperations.saveUserProfile(profile);
+
+    // Clear dev hardcoded meds and sync the user's manual input
+    const oldMeds = await dbOperations.getMedicines();
+    await Promise.all(oldMeds.map(m => dbOperations.deleteMedication(m.id)));
+    
+    for (const m of meds) {
+      await dbOperations.addMedication({
+        id: crypto.randomUUID(),
+        brandName: m.name,
+        genericName: m.name,
+        dosage: m.dosage || null,
+        expiryDate: null,
+        schedule: m.frequency.toLowerCase().includes('2') 
+          ? [
+              { time: "09:00", quantity: 1, unit: "tab", withFood: true }, 
+              { time: "21:00", quantity: 1, unit: "tab", withFood: true }
+            ]
+          : [{ time: "09:00", quantity: 1, unit: "tab", withFood: true }],
+        status: 'active',
+        addedAt: Date.now(),
+        interactionLog: []
+      });
+    }
+
     window.location.href = '/';
   };
 

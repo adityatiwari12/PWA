@@ -6,6 +6,21 @@ export function useNotificationEngine() {
   const notifiedSet = useRef<Set<string>>(new Set());
   const [permission, setPermission] = useState<NotificationPermission>('default');
 
+  const triggerServiceWorkerNotification = (title: string, options: any) => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready
+        .then((registration) => {
+          registration.showNotification(title, options);
+        })
+        .catch((err) => {
+          console.warn('Service worker not ready for notification', err);
+          new Notification(title, options);
+        });
+    } else {
+      new Notification(title, options);
+    }
+  };
+
   useEffect(() => {
     // Request permission on mount
     if ('Notification' in window) {
@@ -38,15 +53,18 @@ export function useNotificationEngine() {
             
             // Check if already taken or already notified
             if (adherence[doseId] !== 'taken' && !notifiedSet.current.has(doseId)) {
+              notifiedSet.current.add(doseId);
               
               // Trigger Notification
-              new Notification('Sanjeevni Health OS', {
+              triggerServiceWorkerNotification('💊 Sanjivani Health OS', {
                 body: `It's time to take ${med.brandName} (${sched.quantity} ${sched.unit}).\n${sched.withFood ? 'Take after meal.' : 'Take before meal.'}`,
                 icon: '/favicon.svg',
-                vibrate: [200, 100, 200, 100, 200]
-              } as any);
-              
-              notifiedSet.current.add(doseId);
+                badge: '/favicon.svg',
+                vibrate: [500, 250, 500, 250, 500],
+                requireInteraction: true,
+                tag: doseId,
+                data: { url: '/medications' }
+              });
             }
           }
         });

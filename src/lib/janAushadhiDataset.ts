@@ -151,6 +151,61 @@ export const JAN_AUSHADHI_KENDRA_LIST: ExtendedKendra[] = [
     phone: '0731-2345678',
     coordinates: { lat: 22.6500, lng: 75.8200 },
     inventory: ['paracetamol', 'pantoprazole', 'metformin', 'amlodipine']
+  },
+  {
+    id: 'K-005',
+    name: 'Jan Aushadhi Kendra - Vijay Nagar',
+    address: 'Scheme No 54, Vijay Nagar, Indore',
+    city: 'Indore',
+    state: 'Madhya Pradesh',
+    pincode: '452010',
+    phone: '0731-2556789',
+    coordinates: { lat: 22.7533, lng: 75.8937 },
+    inventory: ['metformin', 'atorvastatin', 'rosuvastatin', 'telmisartan', 'paracetamol']
+  },
+  {
+    id: 'K-006',
+    name: 'Jan Aushadhi Kendra - Rajwada',
+    address: 'Near Old Palace, Rajwada, Indore',
+    city: 'Indore',
+    state: 'Madhya Pradesh',
+    pincode: '452004',
+    phone: '0731-2445566',
+    coordinates: { lat: 22.7196, lng: 75.8577 },
+    inventory: ['amoxicillin', 'pantoprazole', 'diclofenac', 'cetirizine']
+  },
+  {
+    id: 'K-007',
+    name: 'Jan Aushadhi Kendra - Navlakha',
+    address: 'Near Navlakha Square, Indore',
+    city: 'Indore',
+    state: 'Madhya Pradesh',
+    pincode: '452001',
+    phone: '0731-2440011',
+    coordinates: { lat: 22.7012, lng: 75.8712 },
+    inventory: ['metformin', 'paracetamol', 'amlodipine']
+  },
+  {
+    id: 'K-008',
+    name: 'Jan Aushadhi Kendra - Annapurna',
+    address: 'Annapurna Road, Indore',
+    city: 'Indore',
+    state: 'Madhya Pradesh',
+    pincode: '452009',
+    phone: '0731-2440022',
+    coordinates: { lat: 22.7056, lng: 75.8345 },
+    inventory: ['telmisartan', 'vildagliptin', 'atorvastatin']
+  },
+  {
+    id: 'K-009',
+    name: 'Jan Aushadhi Kendra - Sapna Sangeeta',
+    address: 'Sapna Sangeeta Road, Indore',
+    city: 'Indore',
+    state: 'Madhya Pradesh',
+    pincode: '452001',
+    phone: '0731-2440033',
+    coordinates: { lat: 22.7088, lng: 75.8654 },
+    inventory: ['pantoprazole', 'rosuvastatin', 'paracetamol']
   }
 ];
 
@@ -222,6 +277,123 @@ export const HOSPITAL_LIST: ExtendedHospital[] = [
     waitTime: 20,
     ayushmanAccepted: true,
     basicServices: ['Emergency Care', 'Dialysis', 'Ayushman Ward']
+  },
+  {
+    id: 'H-006',
+    name: 'Bombay Hospital Indore',
+    address: 'Ring Road, IDA Scheme No 94/134, Indore',
+    phone: '0731-4771111',
+    coordinates: { lat: 22.7533, lng: 75.8937 },
+    specialties: ['Cardiology ER', 'Neurology', 'Orthopaedics'],
+    rating: 4.8,
+    openTill: '24/7',
+    waitTime: 25,
+    ayushmanAccepted: true,
+    basicServices: ['Advanced Cardiology', 'Joint Replacement', 'Trauma Center']
+  },
+  {
+    id: 'H-007',
+    name: 'CHL Hospital',
+    address: 'A.B. Road, L.I.G. Square, Indore',
+    phone: '0731-4774444',
+    coordinates: { lat: 22.7231, lng: 75.8856 },
+    specialties: ['General ER', 'Gastroenterology', 'Oncology'],
+    rating: 4.6,
+    openTill: '24/7',
+    waitTime: 15,
+    ayushmanAccepted: true,
+    basicServices: ['Critical Care', 'Chemotherapy', 'Blood Bank']
+  },
+  {
+    id: 'H-008',
+    name: 'Sri Aurobindo Institute of Medical Sciences (SAIMS)',
+    address: 'Indore-Ujjain State Highway, Indore',
+    phone: '0731-4231000',
+    coordinates: { lat: 22.8028, lng: 75.8427 },
+    specialties: ['Pulmonology ER', 'Pediatrics', 'General ER'],
+    rating: 4.4,
+    openTill: '24/7',
+    waitTime: 40,
+    ayushmanAccepted: true,
+    basicServices: ['Maternity Unit', 'NICU', 'Ayushman Special Wards']
+  },
+  {
+    id: 'H-009',
+    name: 'Apple Hospital',
+    address: 'Bhanwarkuan Road, Indore',
+    phone: '0731-4770000',
+    coordinates: { lat: 22.6955, lng: 75.8655 },
+    specialties: ['General ER', 'Surgery'],
+    rating: 4.3,
+    openTill: '24/7',
+    waitTime: 30,
+    ayushmanAccepted: true,
+    basicServices: ['General Medicine', 'ICU']
+  },
+  {
+    id: 'H-010',
+    name: 'Medanta Hospital Indore',
+    address: 'AB Road, Near Vijay Nagar, Indore',
+    phone: '0731-4211111',
+    coordinates: { lat: 22.7412, lng: 75.8912 },
+    specialties: ['Cardiology ER', 'Neurology'],
+    rating: 4.9,
+    openTill: '24/7',
+    waitTime: 20,
+    ayushmanAccepted: false,
+    basicServices: ['Advanced Surgery', 'Trauma']
+  },
+  {
+    id: 'H-011',
+    name: 'Shalby Hospital',
+    address: 'Vijay Nagar, Indore',
+    phone: '0731-6677444',
+    coordinates: { lat: 22.7554, lng: 75.8976 },
+    specialties: ['Orthopaedics', 'General ER'],
+    rating: 4.7,
+    openTill: '24/7',
+    waitTime: 15,
+    ayushmanAccepted: true,
+    basicServices: ['Joint Replacement', 'Physiotherapy']
+  },
+  {
+    id: 'H-012',
+    name: 'Vishesh Jupiter Hospital',
+    address: 'Ring Road, Indore',
+    phone: '0731-4777111',
+    coordinates: { lat: 22.7612, lng: 75.9012 },
+    specialties: ['Cardiology ER', 'Pediatrics'],
+    rating: 4.6,
+    openTill: '24/7',
+    waitTime: 25,
+    ayushmanAccepted: true,
+    basicServices: ['Multispeciality', 'Emergency']
+  },
+  {
+    id: 'H-013',
+    name: 'Greater Kailash Hospital',
+    address: 'Old Palasia, Indore',
+    phone: '0731-4040404',
+    coordinates: { lat: 22.7245, lng: 75.8789 },
+    specialties: ['General ER', 'Gynaecology'],
+    rating: 4.5,
+    openTill: '24/7',
+    waitTime: 35,
+    ayushmanAccepted: true,
+    basicServices: ['Maternity', 'General Surgery']
+  },
+  {
+    id: 'H-014',
+    name: 'Rajshree Apollo Hospital',
+    address: 'Scheme No 54, Vijay Nagar, Indore',
+    phone: '0731-4271111',
+    coordinates: { lat: 22.7521, lng: 75.8954 },
+    specialties: ['General ER', 'Oncology'],
+    rating: 4.7,
+    openTill: '24/7',
+    waitTime: 20,
+    ayushmanAccepted: true,
+    basicServices: ['Cancer Care', 'Emergency']
   }
 ];
 

@@ -45,14 +45,18 @@ LOGIC PROTOCOL:
 4. INDEPENDENT VERIFICATION: If you see "Pantoprazole" and a mangled word like "Paatocld," you know it is "Pantocid."
 5. MANUFACTURE: Identify the pharmaceutical company (Novartis, Sun Pharma, Cipla, etc.).
 6. EXPIRY: Extract date as MM/YYYY.
+7. CRITICAL REJECTION LIST: NEVER output words like "Uncoated", "Film-coated", "Enteric-coated", "Tablet", "Capsule", "Contains", "IP", "BP" as the drug brand name!
 
 FEW-SHOT EXAMPLES:
+---
+INPUT: "Each uncoated tablet contmns Carbamazepine IP 200 mg Tegrital@ 200"
+OUTPUT: {"drug": "Tegrital 200", "dosage": "200mg", "expiry": null, "manufacturer": null}
 ---
 INPUT: "Paatocld DSR | pautocid DSR | Enteric-Coated Baffoprazoie Sodium 40mg | Sustained Domperidone 30mg"
 OUTPUT: {"drug": "Pantocid DSR", "dosage": "40mg / 30mg", "expiry": null, "manufacturer": null}
 ---
 INPUT: "ne TabletsIF Tegritard 200 | NOVARTIS | Carbamazepine 200mg"
-OUTPUT: {"drug": "Tegritol 200", "dosage": "200mg", "expiry": null, "manufacturer": "Novartis"}
+OUTPUT: {"drug": "Tegrital 200", "dosage": "200mg", "expiry": null, "manufacturer": "Novartis"}
 ---
 
 Respond ONLY with a valid JSON object. Do not explain. Do not hallucinate.

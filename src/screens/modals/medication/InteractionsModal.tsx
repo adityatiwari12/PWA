@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 import { useMedicationStore } from '../../../store/medicationStore';
 import { checkOpenFdaInteractions } from '../../../lib/openFDA';
-import { notificationManager } from '../../../lib/notification';
 import InteractionFlag from '../../../components/InteractionFlag';
 import type { Medication, InteractionCheckResult } from '../../../types/medication';
 
@@ -59,9 +58,6 @@ export default function InteractionsModal() {
       };
 
       await addMedication(finalMed);
-      
-      // Schedule reminders for new medication
-      notificationManager.scheduleFromStore([...medications, finalMed]);
       
       setPendingScan(null);
       navigate('/');

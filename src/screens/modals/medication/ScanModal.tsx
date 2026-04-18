@@ -423,98 +423,122 @@ export default function Scan() {
   }
 
   // --------------------------------------------------------------------------
-  // Camera view
+  // Camera view — Roxy-style clean white scanner
   // --------------------------------------------------------------------------
   return (
-    <div className="flex flex-col flex-1 bg-black h-[100dvh] relative overflow-hidden">
-      {/* Top Bar */}
-      <div className="absolute top-0 left-0 right-0 z-50 p-6 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent">
+    <div className="flex flex-col bg-white h-[100dvh] overflow-hidden">
+
+      {/* ── Top bar ── */}
+      <div className="flex items-center px-5 pt-14 pb-3 bg-white">
         <button
+          id="scan-back-btn"
           onClick={() => navigate('/')}
-          className="p-3 bg-white/10 backdrop-blur-xl rounded-full text-white border border-white/20 active:scale-95 transition-all shadow-lg"
+          className="p-2 rounded-xl text-gray-700 active:scale-90 transition-all mr-3"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={20} strokeWidth={2.5} />
         </button>
-        <div className="bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full border border-white/20">
-          <span className="text-white text-[10px] font-black uppercase tracking-[0.2em]">Sanjivani</span>
-        </div>
-        <div className="w-10" />
-      </div>
-
-      <CameraView ref={cameraRef} onCapture={handleCapture} />
-
-      {/* Dimming/Focus Overlays (Cutout Mask) */}
-      <div className="absolute inset-0 pointer-events-none z-30 flex items-center justify-center">
-        {/* Dimmed background around the cutout */}
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-md" style={{
-           maskImage: `linear-gradient(to right, black, black), linear-gradient(to right, black, black)`,
-           WebkitMaskImage: `polygon(0% 0%, 0% 100%, calc(50% - 160px) 100%, calc(50% - 160px) calc(50% - 100px), calc(50% + 160px) calc(50% - 100px), calc(50% + 160px) calc(50% + 100px), calc(50% - 160px) calc(50% + 100px), calc(50% - 160px) 100%, 100% 100%, 100% 0%)`,
-        }} />
-      </div>
-
-      {/* Instructional Overlays (Moved near frame for hierarchy) */}
-      <div className="absolute inset-x-0 top-32 z-40 flex flex-col items-center pointer-events-none px-6 text-center">
-        <h1 className="text-white text-2xl font-black drop-shadow-md tracking-wide">
+        <h1 className="flex-1 text-center text-[18px] font-semibold text-gray-900 tracking-tight">
           Scan Medicine
         </h1>
-        <p className="text-white/70 text-xs font-bold uppercase tracking-widest mt-1">
-          Auto-capture enabled
+        {/* Spacer to keep title centred */}
+        <div className="w-9" />
+      </div>
+
+      {/* ── Auto-capture status pill (subdued badge, NOT a headline) ── */}
+      <div className="flex justify-center pt-1 pb-4">
+        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold transition-colors duration-300 ${
+          isReady
+            ? 'bg-emerald-100 text-emerald-700'
+            : isDetecting
+            ? 'bg-amber-100 text-amber-700'
+            : 'bg-teal-50 text-teal-600'
+        }`}>
+          {/* Pulsing dot */}
+          <span className={`w-1.5 h-1.5 rounded-full ${
+            isReady ? 'bg-emerald-500' :
+            isDetecting ? 'bg-amber-500 animate-pulse' :
+            'bg-teal-400 animate-pulse'
+          }`} />
+          {isReady ? 'Ready to capture' : isDetecting ? 'Text detected…' : 'Auto-capture on'}
+        </span>
+      </div>
+
+      {/* ── Camera + Viewfinder (takes remaining vertical space) ── */}
+      <div className="flex-1 relative flex flex-col items-center justify-center px-6">
+
+        {/* White-bordered viewfinder card */}
+        <div
+          className="relative rounded-[20px] overflow-hidden border border-gray-200"
+          style={{ width: 280, height: 200 }}
+        >
+          {/* Live camera feed */}
+          <CameraView ref={cameraRef} onCapture={handleCapture} />
+
+          {/* ── Red corner brackets ── */}
+          {/* Top-left */}
+          <span className="absolute top-0 left-0 w-7 h-7 border-t-[3px] border-l-[3px] border-[#E84040] rounded-tl-[6px] z-10" />
+          {/* Top-right */}
+          <span className="absolute top-0 right-0 w-7 h-7 border-t-[3px] border-r-[3px] border-[#E84040] rounded-tr-[6px] z-10" />
+          {/* Bottom-left */}
+          <span className="absolute bottom-0 left-0 w-7 h-7 border-b-[3px] border-l-[3px] border-[#E84040] rounded-bl-[6px] z-10" />
+          {/* Bottom-right */}
+          <span className="absolute bottom-0 right-0 w-7 h-7 border-b-[3px] border-r-[3px] border-[#E84040] rounded-br-[6px] z-10" />
+
+          {/* ── Animated red scan line ── */}
+          <div
+            className="absolute left-3 right-3 h-[2px] bg-[#E84040] z-10 rounded-full shadow-[0_0_6px_rgba(232,64,64,0.7)]"
+            style={{ animation: 'scanline 2s ease-in-out infinite' }}
+          />
+        </div>
+
+        {/* Instructional label below viewfinder */}
+        <p className="mt-4 text-[13px] text-gray-400 text-center">
+          Align the medicine label inside the frame
         </p>
       </div>
 
-      {/* Camera Viewfinder / Scan Box */}
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-40">
-        <div className="relative w-[320px] h-[200px]">
-          {/* Main Bold Border */}
-          <div className={`absolute inset-0 border-4 rounded-[32px] transition-all duration-500 shadow-2xl ${
-            isReady ? 'border-emerald-400 shadow-emerald-500/50 scale-[1.02]' : 
-            isDetecting ? 'border-amber-400 shadow-amber-500/30' : 'border-white/40'
-          }`} />
-          
-          {/* Dynamic Feedback Badge */}
-          <div className="absolute -bottom-14 left-0 right-0 flex justify-center transition-all">
-            <div className={`px-5 py-2.5 rounded-full backdrop-blur-xl border flex items-center gap-2.5 shadow-xl transition-all duration-500 ${
-               isReady ? 'bg-emerald-500 text-white border-emerald-400' : 
-               isDetecting ? 'bg-amber-500 text-amber-950 border-amber-400/50 animate-pulse' : 
-               'bg-black/60 text-white border-white/20'
-            }`}>
-              {isReady ? <CheckCircle size={16} className="text-white" /> : 
-               isDetecting ? <RefreshCw size={16} className="animate-spin text-amber-950" /> : 
-               <ScanIcon size={16} className="text-white/60" />}
-              <span className="text-xs font-black uppercase tracking-widest leading-none pt-0.5">
-                {guidance}
-              </span>
-            </div>
-          </div>
+      {/* ── Bottom action bar ── */}
+      <div className="bg-white border-t border-gray-100 px-5 pb-10 pt-4">
+        <div className="flex items-center gap-3">
+
+          {/* Upload — outlined secondary */}
+          <label
+            id="scan-upload-btn"
+            className="flex items-center justify-center gap-2 flex-[1] py-3.5 rounded-full border-[1.5px] border-gray-300 text-gray-600 text-[14px] font-medium cursor-pointer active:scale-95 transition-all select-none"
+          >
+            <ImageIcon size={17} strokeWidth={2} />
+            Upload Photo
+            <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+          </label>
+
+          {/* Capture — filled primary (1.4× wider) */}
+          <button
+            id="scan-capture-btn"
+            onClick={() => cameraRef.current?.capture()}
+            className={`flex items-center justify-center gap-2 flex-[1.4] py-3.5 rounded-full text-white text-[16px] font-medium active:scale-95 transition-all shadow-md ${
+              isReady
+                ? 'bg-emerald-500 shadow-emerald-200'
+                : 'bg-[#E84040] shadow-red-200'
+            }`}
+          >
+            {isReady ? <CheckCircle size={18} /> : <ScanIcon size={18} />}
+            {isReady ? 'Capturing…' : 'Capture'}
+          </button>
+
         </div>
       </div>
 
-      {/* Clean Bottom UI */}
-      <div className="absolute bottom-12 left-0 right-0 z-50 px-12 flex justify-center gap-12 items-center">
-        <label className="flex flex-col items-center gap-2 cursor-pointer group">
-          <div className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-2xl border border-white/20 flex items-center justify-center text-white active:scale-90 transition-transform shadow-xl">
-            <ImageIcon size={22} />
-          </div>
-          <span className="text-[10px] text-white/60 font-black uppercase tracking-widest">Upload</span>
-          <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
-        </label>
-
-        <div className="flex flex-col items-center gap-2">
-          <div className={`w-20 h-20 rounded-full border-[3px] p-1.5 backdrop-blur-sm transition-all duration-500 ${
-            isReady ? 'border-emerald-400 shadow-[0_0_30px_rgba(52,211,153,0.5)]' : 'border-white'
-          }`}>
-             <button 
-                onClick={() => cameraRef.current?.capture()}
-                className={`w-full h-full rounded-full shadow-2xl active:scale-90 transition-all flex items-center justify-center ${
-                  isReady ? 'bg-emerald-500' : 'bg-white'
-                }`}
-             />
-          </div>
-          <span className={`text-[10px] font-black uppercase tracking-widest ${isReady ? 'text-emerald-400' : 'text-white'}`}>
-             {isReady ? 'Capturing' : 'Capture'}
-          </span>
-        </div>
-      </div>
+      {/* ── Scan line keyframe animation ── */}
+      <style>{`
+        @keyframes scanline {
+          0%   { top: 12px;  opacity: 1; }
+          48%  { top: calc(100% - 14px); opacity: 1; }
+          50%  { opacity: 0; }
+          52%  { top: 12px;  opacity: 0; }
+          54%  { opacity: 1; }
+          100% { top: 12px;  opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }

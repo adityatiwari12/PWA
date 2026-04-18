@@ -62,3 +62,14 @@ body {
 .badge-warning { background: #FEF3C7; color: var(--color-warning); border: 1px solid #FDE68A; }
 .badge-success { background: #DCFCE7; color: var(--color-success); border: 1px solid #BBF7D0; }
 .badge-neutral { background: #F3F4F6; color: var(--color-neutral); border: 1px solid #E5E7EB; }
+
+/* Utility to hide scrollbar but keep functionality */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}

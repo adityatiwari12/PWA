@@ -5,8 +5,6 @@ import {
 } from 'lucide-react';
 import { useMedicationStore } from '../../store/medicationStore';
 import { useDiagnosticState } from '../../hooks/useDiagnosticState';
-import { notificationManager } from '../../lib/notification';
-
 /**
  * MedicationsScreen — Medication inventory and safety analysis.
  * Upgraded to a state-driven structure indicating interaction graphs based on new_task.md
@@ -16,20 +14,15 @@ export default function MedicationsScreen() {
   const diagnostic = useDiagnosticState();
 
   useEffect(() => {
-    fetchMedications().then(() => {
-      // Initialize reminders on load
-      const meds = useMedicationStore.getState().medications;
-      notificationManager.scheduleFromStore(meds);
-    });
+    fetchMedications();
   }, [fetchMedications]);
 
   const active = useMemo(() => medications.filter(m => m.status === 'active'), [medications]);
   const archived = useMemo(() => medications.filter(m => m.status !== 'active'), [medications]);
 
   const handleRequestPermission = async () => {
-    const granted = await notificationManager.requestPermission();
-    if (granted) {
-      notificationManager.scheduleFromStore(medications);
+    if ('Notification' in window) {
+      await Notification.requestPermission();
     }
   };
 

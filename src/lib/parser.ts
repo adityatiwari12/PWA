@@ -243,6 +243,13 @@ STRICT CLINICAL RULES:
 2. "dosage": Strength with unit (e.g., 200mg, 500/125).
 3. "expiry": Extract date (MM/YYYY).
 4. "manufacturer": The pharmaceutical company.
+5. CRITICAL REJECTION: NEVER output words like "Uncoated", "Film-coated", "Enteric-coated", "Tablet", "Capsule", "Contains", "IP", "BP" as the drug brand name!
+
+FEW-SHOT EXAMPLES:
+---
+INPUT: "Each uncoated tablet contmns Carbamazepine IP 200 mg Tegrital@ 200"
+OUTPUT: {"drug": "Tegrital 200", "dosage": "200mg", "expiry": null, "manufacturer": null}
+---
 
 Return ONLY a raw JSON object: {"drug":"...","dosage":"...","expiry":"...","manufacturer":"..."}`;
 
