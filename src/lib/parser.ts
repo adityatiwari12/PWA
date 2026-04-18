@@ -23,6 +23,7 @@ export interface ParsedMedication {
   expiry: string | null;
   manufacturer: string | null;
   rawText: string;
+  sourceTier?: string;
 }
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
@@ -108,6 +109,7 @@ async function extractWithGemini(imageDataUrl: string): Promise<ParsedMedication
     expiry: parsed.expiry || null,
     manufacturer: parsed.manufacturer || null,
     rawText: rawContent,
+    sourceTier: 'Tier 1: Gemini Flash Vision'
   };
 }
 
@@ -158,6 +160,7 @@ export async function fallbackRegexParser(text: string): Promise<ParsedMedicatio
     expiry: formattedExpiry,
     manufacturer: mfgMatch ? mfgMatch[1] : null,
     rawText: text,
+    sourceTier: 'Tier 2/3: Regex Engine'
   };
 }
 
@@ -225,20 +228,26 @@ async function runLocalOCR(imageDataUrl: string, onOCRProgress?: (p: number) => 
 async function refineTextWithGemini(rawText: string, initialData: any): Promise<ParsedMedication> {
   if (!GEMINI_API_KEY) throw new Error('No API key for refinement');
 
-  const refinementPrompt = `You are an expert clinical pharmacist. I have OCR text from a medicine package.
-The OCR might have typos or be fragmented. RECONSTRUCT the actual product information.
+  const refinementPrompt = `You are a Senior Clinical Pharmacologist. I have messy OCR fragments from a medicine strip.
+Your goal is to parse this into a HIGH-ACCURACY medication record.
 
 RAW OCR FRAGMENTS: 
 "${rawText}"
 
-STRICT EXTRACTION RULES:
-1. "drug": PRIMARY BRAND NAME (e.g. "Dolo", "Augmentin"). Correct obvious OCR typos.
-2. "dosage": Strength per unit (e.g. "650mg", "500/125mg").
-3. "expiry": Expiry date in MM/YYYY format. If you see "Exp" followed by numbers, parse it.
+STRICT CLINICAL RULES:
+1. "drug": EXTRACT THE BRAND NAME. 
+   - ZERO TOLERANCE: Do NOT output "Fahists" or "Fahist". This is a known OCR error for "Tablets".
+   - REJECT: Do NOT use "Novartis" or "Pfizer" as the drug name (those are manufacturers).
+   - VERIFY: If you see "Carbamazepine", the brand is likely "Tegritol". If you see "Paracetamol", the brand is "Dolo" or "Crocin".
+   - If the brand name is completely unreadable, use the Generic Name (e.g., Carbamazepine) as the drug.
+2. "dosage": Strength with unit (e.g., 200mg, 500/125).
+3. "expiry": Extract date (MM/YYYY).
 4. "manufacturer": The pharmaceutical company.
 
 Return ONLY a raw JSON object: {"drug":"...","dosage":"...","expiry":"...","manufacturer":"..."}`;
 
+  console.log('[Scanner] 📤 Waterfall Tier 0: Sending Refinement Prompt to Gemini...');
+  
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
     {
@@ -255,6 +264,7 @@ Return ONLY a raw JSON object: {"drug":"...","dosage":"...","expiry":"...","manu
   
   const data = await response.json();
   const rawContent = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+  console.log('[Scanner] 📥 Waterfall Tier 0: Gemini Refinement Result:', rawContent);
   const jsonStr = rawContent.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
   const parsed = JSON.parse(jsonStr);
   
@@ -269,6 +279,7 @@ Return ONLY a raw JSON object: {"drug":"...","dosage":"...","expiry":"...","manu
     expiry: parsed.expiry || initialData.expiry || null,
     manufacturer: parsed.manufacturer || initialData.manufacturer || null,
     rawText: rawText,
+    sourceTier: 'Tier 0: Local Hybrid (EasyOCR + Gemini Refine)'
   };
 }
 
@@ -312,34 +323,33 @@ export async function extractMedicalEntitiesVision(
   onOCRProgress?: (p: number) => void
 ): Promise<ParsedMedication> {
 
-  // Tier 0: Hybrid (Local EasyOCR + Gemini Refinement)
+  // Tier 0: Hybrid (Local EasyOCR + Gemini Refinement on Server)
   try {
-    console.log('[Scanner] 🔍 Tier 0: Attempting Local Python Engine (High Accuracy)...');
+    console.log('[Scanner] 🔍 Tier 0: Attempting Local Waterfall Engine (Server-Side Intelligence)...');
     const localResult = await extractWithLocalBackend(imageDataUrl);
     
-    // Even if localResult.drug is "Unknown", as long as we have rawText, we try to refine it with Gemini's intelligence.
+    // The backend now returns high-quality drug/dosage/expiry via its own Gemini integration.
+    if (localResult.drug && localResult.drug !== 'Unknown') {
+      console.log('[Scanner] ⭐ Success via Backend Intelligence:', localResult.drug);
+      const rxResult = await normalizeDrug(localResult.drug);
+      return {
+        ...localResult,
+        genericName: rxResult?.name || localResult.drug,
+        rxcui: rxResult?.rxcui || '',
+        sourceTier: 'Tier 0: Local Engine (Cloud-Enhanced)'
+      };
+    }
+    
+    console.warn('[Scanner] Backend returned Unknown drug. Trying local refinement fallback...');
     if (localResult.rawText && localResult.rawText.trim().length > 3) {
       try {
-        console.log('[Scanner] 💎 Found local text. Requesting Gemini Refinement...');
         const refined = await refineTextWithGemini(localResult.rawText, localResult);
         if (refined.drug !== 'Unknown') {
-          console.log('[Scanner] ⭐ Success! Refined Data:', refined.drug);
           return refined;
         }
-        console.warn('[Scanner] Gemini refinement yielded no drug name, continuing fallback...');
       } catch (refineErr) {
-        console.warn('[Scanner] ⚠️ Gemini Refinement failed, using raw local result if valid.');
-        if (localResult.drug && localResult.drug !== 'Unknown') {
-          const rxResult = await normalizeDrug(localResult.drug);
-          return {
-            ...localResult,
-            genericName: rxResult?.name || localResult.drug,
-            rxcui: rxResult?.rxcui || '',
-          };
-        }
+        console.warn('[Scanner] ⚠️ Frontend Refinement failed fallback.');
       }
-    } else {
-      console.warn('[Scanner] ⚠️ Local OCR returned empty text.');
     }
   } catch (err) {
     if (err instanceof DOMException && err.name === 'AbortError') {

@@ -53,6 +53,21 @@ export interface GovernmentScheme {
   category: 'welfare' | 'insurance' | 'subsidy';
 }
 
+export interface Hospital {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+  specialties: string[];
+  rating: number;
+  openTill: string;
+  waitTime: number; // in minutes
+}
+
 export interface Medication {
   id: string;
   brandName: string;             // As scanned by OCR

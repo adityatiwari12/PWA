@@ -61,6 +61,15 @@ export function scoreConfidence(
     score -= 10;
     reasons.push('Expiry not found');
   }
+  
+  // --- Penalty: Hallucinations & Known OCR errors ---------------------------
+  const drugLower = (drug || '').toLowerCase();
+  const blacklist = ['fahists', 'fahist', 'tablets', 'capsules', 'novartis', 'pfizer', 'glaxo', 'cipla', 'abbott'];
+  
+  if (blacklist.some(b => drugLower.includes(b))) {
+    score = 10; // Forced failure
+    reasons.push(`Detected likely hallucination or non-drug name: "${drug}"`);
+  }
 
   // --- Penalty: very short raw text (Vision model couldn't read much) -------
   const wordCount = rawText.trim().split(/\s+/).filter(w => w.length > 1).length;

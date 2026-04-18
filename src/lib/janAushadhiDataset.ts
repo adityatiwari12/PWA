@@ -1,4 +1,4 @@
-import type { JanAushadhiProduct, JanAushadhiKendra, GovernmentScheme } from '../types/medication';
+import type { JanAushadhiProduct, JanAushadhiKendra, GovernmentScheme, Hospital } from '../types/medication';
 
 /**
  * MOCK JAN AUSHADHI MEDICINE DATASET
@@ -183,5 +183,66 @@ export const GOVT_SCHEMES: GovernmentScheme[] = [
       'Belong to BPL category'
     ],
     category: 'welfare'
+  }
+];
+
+/**
+ * REAL HOSPITAL DATA (Delhi Area)
+ */
+export const HOSPITAL_LIST: Hospital[] = [
+  {
+    id: 'H-001',
+    name: 'AIIMS New Delhi',
+    address: 'Ansari Nagar, New Delhi',
+    phone: '011-26588500',
+    coordinates: { lat: 28.5672, lng: 77.2100 },
+    specialties: ['Cardiology ER', 'Neurology', 'Oncology', 'General ER'],
+    rating: 4.8,
+    openTill: '24/7',
+    waitTime: 45
+  },
+  {
+    id: 'H-002',
+    name: 'Safdarjung Hospital',
+    address: 'Ansari Nagar East, New Delhi',
+    phone: '011-26707100',
+    coordinates: { lat: 28.5683, lng: 77.2064 },
+    specialties: ['Burn Unit', 'Pulmonology ER', 'Toxicology / ER', 'General ER'],
+    rating: 4.2,
+    openTill: '24/7',
+    waitTime: 60
+  },
+  {
+    id: 'H-003',
+    name: 'Max Super Speciality Hospital, Saket',
+    address: '1, 2, Press Enclave Road, Saket, New Delhi',
+    phone: '011-26515050',
+    coordinates: { lat: 28.5284, lng: 77.2197 },
+    specialties: ['Cardiology ER', 'Orthopaedics', 'Pediatrics'],
+    rating: 4.5,
+    openTill: '24/7',
+    waitTime: 15
+  },
+  {
+    id: 'H-004',
+    name: 'Fortis Hospital, Shalimar Bagh',
+    address: 'AA-299, Shaheed Udham Singh Marg, Shalimar Bagh, Delhi',
+    phone: '011-45302222',
+    coordinates: { lat: 28.7186, lng: 77.1633 },
+    specialties: ['General ER', 'Nephrology', 'Pulmonology ER'],
+    rating: 4.4,
+    openTill: '24/7',
+    waitTime: 20
+  },
+  {
+    id: 'H-005',
+    name: 'Indraprastha Apollo Hospitals',
+    address: 'Delhi-Mathura Road, Sarita Vihar, New Delhi',
+    phone: '011-71791090',
+    coordinates: { lat: 28.5372, lng: 77.2847 },
+    specialties: ['Transplant Surgery', 'Cardiology ER', 'Toxicology / ER'],
+    rating: 4.6,
+    openTill: '24/7',
+    waitTime: 25
   }
 ];

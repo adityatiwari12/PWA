@@ -238,10 +238,10 @@ export async function scanPill(
   onProgress?.({ stage: 'preprocessing', detail: 'Isolating text layers…' });
   const processedImageUrl = await preprocessForVision(dataUrl);
 
-  // Stage 2: Multi-tier extraction with local OCR fallback progress
-  onProgress?.({ stage: 'analyzing', detail: 'Activating Local Engine…' });
+  // Stage 2: Multi-tier extraction with local OCR waterfall
+  onProgress?.({ stage: 'analyzing', detail: 'Activating Waterfall Engine…' });
   const medication = await extractMedicalEntitiesVision(processedImageUrl, (p) => {
-    onProgress?.({ stage: 'analyzing', detail: `Deep Scan: ${p}%` });
+    onProgress?.({ stage: 'analyzing', detail: `Deep Scan: Pass ${p}% / 8` });
   });
 
   // Stage 3: Confidence scoring

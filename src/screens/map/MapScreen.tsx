@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMap, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ChevronLeft, Navigation, MapPin, ShieldAlert } from 'lucide-react';
+import { ChevronLeft, Navigation, MapPin, ShieldAlert, XCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useMedicationStore } from '../../store/medicationStore';
 import { useDiagnosticState } from '../../hooks/useDiagnosticState';
+import { HOSPITAL_LIST, JAN_AUSHADHI_KENDRA_LIST } from '../../lib/janAushadhiDataset';
 
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
@@ -33,6 +34,8 @@ type Place = {
   lat: number; 
   lng: number; 
   name: string; 
+  address?: string;
+  phone?: string;
   hasDrug?: boolean; 
   drugName?: string; 
   price?: string;
@@ -40,20 +43,23 @@ type Place = {
   rating?: number;
   openTill?: string;
   waitTime?: number;
+  specialties?: string[];
   specialtyMatch?: boolean;
   specialtyName?: string;
 };
 
 // Component to dynamically pan the map
-function MapController({ position, bounds }: { position: [number, number], bounds?: L.LatLngBoundsExpression }) {
+function MapController({ position, bounds, isNavigating }: { position: [number, number], bounds?: L.LatLngBoundsExpression, isNavigating?: boolean }) {
   const map = useMap();
   useEffect(() => {
-    if (bounds) {
+    if (isNavigating) {
+      map.flyTo(position, 17, { animate: true }); // Zoom in closer for navigation
+    } else if (bounds) {
       map.fitBounds(bounds, { padding: [50, 50], animate: true });
     } else if (position[0] !== 0) {
       map.flyTo(position, 13, { animate: true });
     }
-  }, [position, bounds, map]);
+  }, [position, bounds, map, isNavigating]);
   return null;
 }
 
@@ -70,6 +76,20 @@ export default function MapScreen() {
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [routePolyline, setRoutePolyline] = useState<[number, number][]>([]);
   const [routeDetails, setRouteDetails] = useState<{ distance: string, time: string } | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [watchId, setWatchId] = useState<number | null>(null);
+
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371; // Radius of the earth in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
 
   const generatePlaces = (lat: number, lng: number) => {
     const newPlaces: Place[] = [];
@@ -84,33 +104,48 @@ export default function MapScreen() {
        targetSpecialty = 'Pulmonology ER';
     }
 
-    for(let i = 0; i < 20; i++) {
-      const latOffset = (Math.random() - 0.5) * 0.36;
-      const lngOffset = (Math.random() - 0.5) * 0.36;
-      const isHospital = Math.random() > 0.5;
-      const distanceCalc = (Math.sqrt(latOffset * latOffset + lngOffset * lngOffset) * 111).toFixed(1);
-      
-      const isSpecialtyMatch = isHospital && Math.random() > 0.7;
+    // Add Real Hospitals
+    HOSPITAL_LIST.forEach(h => {
+      const dist = calculateDistance(lat, lng, h.coordinates.lat, h.coordinates.lng);
+      if (dist <= 20) {
+        const isSpecialtyMatch = h.specialties.includes(targetSpecialty);
+        newPlaces.push({
+          ...h,
+          type: 'hospital',
+          lat: h.coordinates.lat,
+          lng: h.coordinates.lng,
+          distanceKm: dist.toFixed(1),
+          specialtyMatch: isSpecialtyMatch,
+          specialtyName: isSpecialtyMatch ? targetSpecialty : 'General ER'
+        });
+      }
+    });
 
-      newPlaces.push({
-        id: `gen_${i}`,
-        type: isHospital ? 'hospital' : 'jan_aushadhi',
-        lat: lat + latOffset,
-        lng: lng + lngOffset,
-        name: isHospital ? `Ayushman Hospital ${i+1}` : `PMBJP Kendra ${i+1}`,
-        hasDrug: !isHospital ? Math.random() > 0.2 : undefined,
-        drugName: !isHospital ? neededDrug : undefined,
-        price: (!isHospital && Math.random() > 0.2) ? `₹${Math.floor(Math.random() * 40 + 10)} (80% less)` : undefined,
-        distanceKm: distanceCalc,
-        rating: 3.5 + Math.random() * 1.5,
-        openTill: isHospital ? '24/7' : Math.random() > 0.5 ? '10:00 PM' : '09:00 PM',
-        waitTime: isHospital ? Math.floor(Math.random() * 45) + 5 : undefined,
-        specialtyMatch: isSpecialtyMatch,
-        specialtyName: isSpecialtyMatch ? targetSpecialty : 'General ER'
-      });
-    }
+    // Add Real Jan Aushadhi Kendras
+    JAN_AUSHADHI_KENDRA_LIST.forEach(k => {
+      const dist = calculateDistance(lat, lng, k.coordinates.lat, k.coordinates.lng);
+      if (dist <= 20) {
+        newPlaces.push({
+          ...k,
+          type: 'jan_aushadhi',
+          lat: k.coordinates.lat,
+          lng: k.coordinates.lng,
+          distanceKm: dist.toFixed(1),
+          hasDrug: Math.random() > 0.3,
+          drugName: neededDrug,
+          price: `₹${Math.floor(Math.random() * 40 + 10)} (80% less)`,
+          rating: 4.0 + Math.random(),
+          openTill: '09:00 PM'
+        });
+      }
+    });
     
+    // Sort by distance
     newPlaces.sort((a,b) => parseFloat(a.distanceKm || '0') - parseFloat(b.distanceKm || '0'));
+
+    // If no places found within 20km, maybe show a few closest ones anyway 
+    // but the user's request is specific. I'll stick to the 20km limit.
+    
     return newPlaces;
   };
 
@@ -125,16 +160,60 @@ export default function MapScreen() {
           setLoading(false);
         },
         () => {
-          setPlaces(generatePlaces(28.6139, 77.2090));
+          const defaultLat = 28.5672; // Near AIIMS
+          const defaultLng = 77.2100;
+          setUserLocation([defaultLat, defaultLng]);
+          setPlaces(generatePlaces(defaultLat, defaultLng));
           setLoading(false);
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
     } else {
-      setPlaces(generatePlaces(28.6139, 77.2090));
+      setPlaces(generatePlaces(28.5672, 77.2100));
       setLoading(false);
     }
-  }, [neededDrug, diagnostic.level]); // Regenerate if state changes heavily
+  }, [neededDrug, diagnostic.level]);
+
+  // Real-time tracking during navigation
+  useEffect(() => {
+    if (isNavigating && 'geolocation' in navigator) {
+      const id = navigator.geolocation.watchPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation([latitude, longitude]);
+          
+          // Re-fetch route if still navigating to a place
+          if (selectedPlace) {
+             // Simple re-fetch logic
+             // In a real app we'd check if significant deviation occurred
+          }
+        },
+        (err) => console.error("Tracking error", err),
+        { enableHighAccuracy: true, distanceFilter: 10 }
+      );
+      setWatchId(id);
+      return () => {
+        if (id) navigator.geolocation.clearWatch(id);
+      };
+    } else if (!isNavigating && watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
+      setWatchId(null);
+    }
+  }, [isNavigating]);
+
+  const toggleNavigation = () => {
+    if (!isNavigating) {
+      setIsNavigating(true);
+      // If no route exists but a place is selected, fetch it
+      if (selectedPlace && routePolyline.length === 0) {
+        fetchRoute(selectedPlace);
+      }
+    } else {
+      setIsNavigating(false);
+      setRoutePolyline([]);
+      setSelectedPlace(null);
+    }
+  };
 
   const fetchRoute = async (destination: Place) => {
     setSelectedPlace(destination);
@@ -156,7 +235,7 @@ export default function MapScreen() {
     }
   };
 
-  const mapBounds: L.LatLngBoundsExpression | undefined = routePolyline.length > 0 
+  const mapBounds: L.LatLngBoundsExpression | undefined = (routePolyline.length > 0 && !isNavigating) 
       ? L.latLngBounds([userLocation, [selectedPlace!.lat, selectedPlace!.lng]])
       : undefined;
 
@@ -200,7 +279,7 @@ export default function MapScreen() {
               ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" 
               : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"}
           />
-          <MapController position={userLocation} bounds={mapBounds} />
+          <MapController position={userLocation} bounds={mapBounds} isNavigating={isNavigating} />
           
           {!loading && (
             <Marker position={userLocation} icon={userIcon} />
@@ -245,6 +324,11 @@ export default function MapScreen() {
                 <h3 className="font-black text-2xl text-gray-900 leading-none mb-1">
                   {selectedPlace.name}
                 </h3>
+                {selectedPlace.address && (
+                  <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tight">
+                    {selectedPlace.address}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -275,7 +359,6 @@ export default function MapScreen() {
                    <p className="font-bold text-gray-400 text-sm mt-0.5">Calculating vectors...</p>
                 )}
               </div>
-              
               {selectedPlace.type === 'hospital' && (
                 <div className="text-right border-l pl-4 border-gray-200">
                    <p className="text-[10px] uppercase tracking-widest font-black text-gray-500">ER Wait Time</p>
@@ -283,6 +366,15 @@ export default function MapScreen() {
                      (selectedPlace.waitTime || 0) > 30 ? 'text-amber-500' : 'text-emerald-500'
                    }`}>
                       {selectedPlace.waitTime} <span className="font-bold text-sm text-gray-500">m</span>
+                   </p>
+                </div>
+              )}
+
+              {selectedPlace.phone && (
+                <div className="text-right border-l pl-4 border-gray-200">
+                   <p className="text-[10px] uppercase tracking-widest font-black text-gray-500">Contact</p>
+                   <p className="font-black text-xs leading-none mt-1 text-blue-600">
+                      {selectedPlace.phone}
                    </p>
                 </div>
               )}
@@ -308,10 +400,22 @@ export default function MapScreen() {
               </div>
             )}
 
-            <button className={`w-full mt-6 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all shadow-xl ${
-              isEmergency ? 'bg-red-600 shadow-red-600/30' : 'bg-gray-900 shadow-gray-900/20'
-            }`}>
-              <Navigation size={18} /> START NAVIGATION
+            <button 
+              onClick={toggleNavigation}
+              className={`w-full mt-6 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all shadow-xl ${
+                isNavigating ? 'bg-red-900 shadow-red-900/30 ring-4 ring-red-500/20' : 
+                isEmergency ? 'bg-red-600 shadow-red-600/30' : 'bg-gray-900 shadow-gray-900/20'
+              }`}
+            >
+              {isNavigating ? (
+                <>
+                  <XCircle size={18} /> STOP NAVIGATION
+                </>
+              ) : (
+                <>
+                  <Navigation size={18} /> START NAVIGATION
+                </>
+              )}
             </button>
           </div>
         )}

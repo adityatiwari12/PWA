@@ -6,3 +6,5 @@ transformers
 pillow
 python-multipart
 numpy
+google-generativeai
+python-dotenv
