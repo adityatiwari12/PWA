@@ -1,10 +1,4 @@
 fastapi
 uvicorn
-easyocr
-torch
-transformers
-pillow
 python-multipart
-numpy
-google-generativeai
-python-dotenv
+jinja2

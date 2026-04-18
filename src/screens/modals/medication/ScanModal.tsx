@@ -132,7 +132,6 @@ export default function Scan() {
   });
 
   // UX guidance states
-  const [guidance, setGuidance] = useState("Align label to start");
   const [isReady, setIsReady] = useState(false);
   
   const navigate = useNavigate();
@@ -171,13 +170,11 @@ export default function Scan() {
 
       if (detected) {
         setIsDetecting(true);
-        setGuidance("Detecting...");
         
         // Wait 1.5s of stable detection to auto-capture
         if (!stableTimeoutRef.current) {
           stableTimeoutRef.current = setTimeout(() => {
             if (!isActive) return;
-            setGuidance("Ready ✓");
             setIsReady(true);
             if ('vibrate' in navigator) navigator.vibrate([100, 50, 100]); // Haptic feedback
             
@@ -188,7 +185,6 @@ export default function Scan() {
         }
       } else {
         setIsDetecting(false);
-        setGuidance("Align label");
         setIsReady(false);
         fallbackTick = 0;
         if (stableTimeoutRef.current) {
@@ -220,7 +216,6 @@ export default function Scan() {
     setProgressEvent(null);
     setManualCorrection({ drug: '', dosage: '', expiry: '' });
     setIsReady(false);
-    setGuidance("Align label to start");
   }
 
   // --------------------------------------------------------------------------

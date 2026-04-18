@@ -7,8 +7,7 @@ import {
   Sun, 
   CloudSun, 
   Sunset, 
-  Moon,
-  Check
+  Moon
 } from 'lucide-react';
 import { useMedicationStore } from '../../../store/medicationStore';
 import { normalizeDrug } from '../../../lib/rxnorm';

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ChevronLeft, Search, User, MapPin, Star, ChevronRight, Hospital, Store, Phone, Clock, ArrowRight, Navigation } from 'lucide-react';
+import { ChevronLeft, Search, MapPin, Star, ChevronRight, Hospital, Store, Phone, Navigation } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { HOSPITAL_LIST, JAN_AUSHADHI_KENDRA_LIST, type ExtendedHospital, type ExtendedKendra } from '../../lib/janAushadhiDataset';
 
@@ -56,7 +56,6 @@ export default function MapScreen() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('ayushman');
   const [userLocation, setUserLocation] = useState<[number, number]>([22.7196, 75.8577]); // Default Indore
-  const [loading, setLoading] = useState(true);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
 
   useEffect(() => {
@@ -64,15 +63,10 @@ export default function MapScreen() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setUserLocation([position.coords.latitude, position.coords.longitude]);
-          setLoading(false);
         },
-        () => {
-          setLoading(false);
-        },
+        () => {},
         { enableHighAccuracy: true, timeout: 5000 }
       );
-    } else {
-      setLoading(false);
     }
   }, []);
 

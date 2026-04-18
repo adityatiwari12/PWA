@@ -25,6 +25,7 @@ import { useMedicationStore } from '../../store/medicationStore';
 import { useCycleState } from '../../hooks/useCycleState';
 import { generateCycleInsights } from '../../lib/gemini';
 import type { UserProfile } from '../../types/user';
+import { triggerEmergencyWebhook } from '../../lib/emergency';
 
 export default function ProfileScreen() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -457,13 +458,8 @@ export default function ProfileScreen() {
                         </div>
                       </div>
                       <button
-                        onClick={async () => {
-                          try {
-                            await fetch('https://hook.eu2.make.com/2b9qvf5zvmu99zss88yemjgl11irj4nw', {
-                              method: 'POST', headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ event: 'emergency_call_initiated', timestamp: new Date().toISOString(), caller: { name: profile.name, bloodType: profile.bloodType }, contact: { name: c.name, relation: c.relation, phone: c.phone } }),
-                            });
-                          } catch { /* silent */ }
+                        onClick={() => {
+                          triggerEmergencyWebhook(profile, c);
                           window.location.href = `tel:${c.phone}`;
                         }}
                         className="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center active:scale-90 transition-transform"

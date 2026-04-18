@@ -7,7 +7,7 @@ import {
 import { useMedicationStore } from '../../../store/medicationStore';
 import { checkDrugInteractions } from '../../../lib/gemini';
 import InteractionFlag from '../../../components/InteractionFlag';
-import type { Medication, InteractionCheckResult } from '../../../types/medication';
+import type { Medication } from '../../../types/medication';
 
 export default function InteractionsModal() {
   const { pendingScan, medications, fetchMedications, addMedication, setPendingScan } = useMedicationStore();

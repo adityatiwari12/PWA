@@ -1,15 +1,17 @@
 /**
  * parser.ts
  *
- * Resilience-First Medical Entity Extraction Pipeline.
+ * Cloud-First Medical Entity Extraction Pipeline.
+ * 
+ * Optimized for Sanjivani Health OS (Minimal Footprint).
  *
- * Tier 1: Gemini 2.0 Flash Vision  — Cloud-based combined OCR + NER (best accuracy, but heavily rate-limited)
- * Tier 2: OCR.Space + Regex        — Fast, free cloud OCR without strict quotas + our regex parser
- * Tier 3: Offline Tesseract        — Purely on-device OCR (heavy, last resort)
+ * Tier 1: Groq Llama 3.2 Vision  — Ultra-fast Llama-powered extraction.
+ * Tier 2: Gemini 1.5 Flash Vision — Robust multi-modal fallback.
+ * Tier 3: OCR.Space + Regex        — Lightweight cloud OCR fallback.
  */
 
 import { normalizeDrug } from './rxnorm';
-import Tesseract from 'tesseract.js';
+import { extractWithGroq, extractWithGemini } from './vision';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -25,12 +27,6 @@ export interface ParsedMedication {
   rawText: string;
   sourceTier?: string;
 }
-
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
-
-// ---------------------------------------------------------------------------
-// Drug dictionary for local regex
-// ---------------------------------------------------------------------------
 
 const DRUG_DICTIONARY = [
   "Paracetamol", "Ibuprofen", "Aspirin", "Amoxicillin",
@@ -56,72 +52,46 @@ function parseDataUrl(dataUrl: string): { mime: string; base64: string } {
 }
 
 // ---------------------------------------------------------------------------
-// TIER 1: Gemini Vision (Cloud)
+// TIER 3: Free Cloud OCR (api.ocr.space)
 // ---------------------------------------------------------------------------
 
-const EXTRACTION_PROMPT = `You are a clinical pharmacology AI analyzing a medicine image.
-READ every piece of text visible in the image. EXTRACT these fields:
-- "drug": PRIMARY brand/drug name.
-- "dosage": Strength with unit.
-- "expiry": Expiry date.
-- "manufacturer": Pharmaceutical company name.
-
-RULES:
-1. Return ONLY a raw JSON object: {"drug":"...","dosage":"...","expiry":"...","manufacturer":"..."}
-2. Set null for any field you cannot clearly read. Do NOT hallucinate.`;
-
-async function extractWithGemini(imageDataUrl: string): Promise<ParsedMedication> {
-  if (!GEMINI_API_KEY) throw new Error('No API key');
-
-  const { mime, base64 } = parseDataUrl(imageDataUrl);
-
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-    {
+async function runFreeCloudOCR(imageDataUrl: string): Promise<string> {
+  console.log('[parser] 🟡 Tier 3: Running Free Cloud OCR (OCR.space)...');
+  try {
+    const formData = new FormData();
+    formData.append('base64image', imageDataUrl);
+    formData.append('language', 'eng');
+    formData.append('apikey', 'helloworld'); 
+    formData.append('isOverlayRequired', 'false');
+    
+    const response = await fetch('https://api.ocr.space/parse/image', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{
-          parts: [
-            { inline_data: { mime_type: mime, data: base64 } },
-            { text: EXTRACTION_PROMPT },
-          ],
-        }],
-        generationConfig: { temperature: 0 },
-      }),
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error(`OCR.space returned ${response.status}`);
+    
+    const data = await response.json();
+    if (data.IsErroredOnProcessing || !data.ParsedResults?.length) {
+      throw new Error('OCR.space failed to parse');
     }
-  );
 
-  if (!response.ok) throw new Error(`API error ${response.status}`);
-  
-  const data = await response.json();
-  const rawContent = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-  const jsonStr = rawContent.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
-  const parsed = JSON.parse(jsonStr);
-  const drugName = parsed.drug || 'Unknown';
-  const rxResult = await normalizeDrug(drugName);
-
-  return {
-    drug: drugName,
-    genericName: rxResult?.name || drugName,
-    rxcui: rxResult?.rxcui || '',
-    dosage: parsed.dosage || null,
-    expiry: parsed.expiry || null,
-    manufacturer: parsed.manufacturer || null,
-    rawText: rawContent,
-    sourceTier: 'Tier 1: Gemini Flash Vision'
-  };
+    const text = data.ParsedResults[0].ParsedText || '';
+    return text;
+  } catch (err) {
+    console.error('[parser] Free Cloud OCR failed:', err);
+    throw err;
+  }
 }
 
 // ---------------------------------------------------------------------------
-// TIER 2 & 3: Regex Extraction Engine
+// Regex Parser Fallback
 // ---------------------------------------------------------------------------
 
 export async function fallbackRegexParser(text: string): Promise<ParsedMedication> {
   const normalizedText = text.replace(/\n/g, ' ').trim();
 
   let detectedDrug = "";
-  // 1. Dictionary Match
   for (const drug of DRUG_DICTIONARY) {
     if (new RegExp(`\\b${drug}\\b`, 'i').test(normalizedText)) {
       detectedDrug = drug;
@@ -129,7 +99,6 @@ export async function fallbackRegexParser(text: string): Promise<ParsedMedicatio
     }
   }
 
-  // 2. Heuristic Match: Find capitalized words not in exclusion list
   if (!detectedDrug) {
     const tokens = normalizedText.split(/\s+/);
     for (const token of tokens) {
@@ -143,7 +112,6 @@ export async function fallbackRegexParser(text: string): Promise<ParsedMedicatio
     }
   }
 
-  // 3. Regex extractions
   const dosageMatch = normalizedText.match(/\b\d+(\.\d+)?\s?(mg|ml|g|mcg|iu|meq|%)\b/i);
   const expiryMatch = normalizedText.match(/(?:exp|expiry|use by|before)?[^\d]*(0[1-9]|1[0-2])[-/](\d{2,4})\b/i);
   const formattedExpiry = expiryMatch ? `${expiryMatch[1]}/${expiryMatch[2]}` : null;
@@ -160,167 +128,8 @@ export async function fallbackRegexParser(text: string): Promise<ParsedMedicatio
     expiry: formattedExpiry,
     manufacturer: mfgMatch ? mfgMatch[1] : null,
     rawText: text,
-    sourceTier: 'Tier 2/3: Regex Engine'
+    sourceTier: 'Tier 3: Regex Engine'
   };
-}
-
-// ---------------------------------------------------------------------------
-// TIER 2: Free Cloud OCR (api.ocr.space)
-// ---------------------------------------------------------------------------
-
-async function runFreeCloudOCR(imageDataUrl: string): Promise<string> {
-  console.log('[parser] 🟡 Tier 2: Running Free Cloud OCR (OCR.space)...');
-  try {
-    const formData = new FormData();
-    formData.append('base64image', imageDataUrl);
-    formData.append('language', 'eng');
-    formData.append('apikey', 'helloworld'); // Free public tier
-    formData.append('isOverlayRequired', 'false');
-    
-    // OCR.Space requires base64 content type to be strictly defined
-    const response = await fetch('https://api.ocr.space/parse/image', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) throw new Error(`OCR.space returned ${response.status}`);
-    
-    const data = await response.json();
-    if (data.IsErroredOnProcessing || !data.ParsedResults?.length) {
-      throw new Error('OCR.space failed to parse');
-    }
-
-    const text = data.ParsedResults[0].ParsedText || '';
-    console.log('[parser] OCR.space extracted:', text.length, 'chars');
-    return text;
-  } catch (err) {
-    console.error('[parser] Free Cloud OCR failed:', err);
-    throw err;
-  }
-}
-
-// ---------------------------------------------------------------------------
-// TIER 3: Local Offline OCR (Tesseract)
-// ---------------------------------------------------------------------------
-
-async function runLocalOCR(imageDataUrl: string, onOCRProgress?: (p: number) => void): Promise<string> {
-  console.log('[parser] 🔴 Tier 3: Running local Tesseract OCR...');
-  try {
-    const result = await Tesseract.recognize(imageDataUrl, 'eng', {
-      logger: m => {
-        if (m.status === 'recognizing text' && onOCRProgress) {
-          onOCRProgress(Math.round(m.progress * 100));
-        }
-      }
-    });
-    console.log('[parser] Local OCR extracted:', result.data.text.length, 'chars');
-    return result.data.text;
-  } catch(e) {
-    console.error('[parser] Local OCR failed:', e);
-    return '';
-  }
-}
-
-// ---------------------------------------------------------------------------
-// TIER 0: Local Python Backend (EasyOCR + PubMedBERT)
-// ---------------------------------------------------------------------------
-
-async function refineTextWithGemini(rawText: string, initialData: any): Promise<ParsedMedication> {
-  if (!GEMINI_API_KEY) throw new Error('No API key for refinement');
-
-  const refinementPrompt = `You are a Senior Clinical Pharmacologist. I have messy OCR fragments from a medicine strip.
-Your goal is to parse this into a HIGH-ACCURACY medication record.
-
-RAW OCR FRAGMENTS: 
-"${rawText}"
-
-STRICT CLINICAL RULES:
-1. "drug": EXTRACT THE BRAND NAME. 
-   - ZERO TOLERANCE: Do NOT output "Fahists" or "Fahist". This is a known OCR error for "Tablets".
-   - REJECT: Do NOT use "Novartis" or "Pfizer" as the drug name (those are manufacturers).
-   - VERIFY: If you see "Carbamazepine", the brand is likely "Tegritol". If you see "Paracetamol", the brand is "Dolo" or "Crocin".
-   - If the brand name is completely unreadable, use the Generic Name (e.g., Carbamazepine) as the drug.
-2. "dosage": Strength with unit (e.g., 200mg, 500/125).
-3. "expiry": Extract date (MM/YYYY).
-4. "manufacturer": The pharmaceutical company.
-5. CRITICAL REJECTION: NEVER output words like "Uncoated", "Film-coated", "Enteric-coated", "Tablet", "Capsule", "Contains", "IP", "BP" as the drug brand name!
-
-FEW-SHOT EXAMPLES:
----
-INPUT: "Each uncoated tablet contmns Carbamazepine IP 200 mg Tegrital@ 200"
-OUTPUT: {"drug": "Tegrital 200", "dosage": "200mg", "expiry": null, "manufacturer": null}
----
-
-Return ONLY a raw JSON object: {"drug":"...","dosage":"...","expiry":"...","manufacturer":"..."}`;
-
-  console.log('[Scanner] 📤 Waterfall Tier 0: Sending Refinement Prompt to Gemini...');
-  
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: refinementPrompt }] }],
-        generationConfig: { temperature: 0.1 },
-      }),
-    }
-  );
-
-  if (!response.ok) throw new Error('Gemini Refinement Failed');
-  
-  const data = await response.json();
-  const rawContent = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-  console.log('[Scanner] 📥 Waterfall Tier 0: Gemini Refinement Result:', rawContent);
-  const jsonStr = rawContent.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
-  const parsed = JSON.parse(jsonStr);
-  
-  const drugName = parsed.drug && parsed.drug !== 'Unknown' ? parsed.drug : (initialData.drug !== 'Unknown' ? initialData.drug : 'Unknown');
-  const rxResult = await normalizeDrug(drugName);
-
-  return {
-    drug: drugName,
-    genericName: rxResult?.name || drugName,
-    rxcui: rxResult?.rxcui || '',
-    dosage: parsed.dosage || initialData.dosage || null,
-    expiry: parsed.expiry || initialData.expiry || null,
-    manufacturer: parsed.manufacturer || initialData.manufacturer || null,
-    rawText: rawText,
-    sourceTier: 'Tier 0: Local Hybrid (EasyOCR + Gemini Refine)'
-  };
-}
-
-async function extractWithLocalBackend(imageDataUrl: string): Promise<ParsedMedication> {
-  // Convert to blob
-  const binary = atob(imageDataUrl.split(',')[1]);
-  const array = [];
-  for (let i = 0; i < binary.length; i++) array.push(binary.charCodeAt(i));
-  const blob = new Blob([new Uint8Array(array)], { type: 'image/jpeg' });
-  const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
-
-  const formData = new FormData();
-  formData.append('file', file);
-
-  // Add timeout logic
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
-
-  try {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || '';
-    const endpoint = `${backendUrl}/api/extract`;
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      body: formData,
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-
-    if (!response.ok) throw new Error(`Server returned ${response.status}`);
-    return await response.json();
-  } catch (err) {
-    clearTimeout(timeoutId);
-    throw err;
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -329,69 +138,64 @@ async function extractWithLocalBackend(imageDataUrl: string): Promise<ParsedMedi
 
 export async function extractMedicalEntitiesVision(
   imageDataUrl: string,
-  onOCRProgress?: (p: number) => void
+  _onOCRProgress?: (p: number) => void
 ): Promise<ParsedMedication> {
+  const { base64 } = parseDataUrl(imageDataUrl);
 
-  // Tier 0: Hybrid (Local EasyOCR + Gemini Refinement on Server)
+  // Tier 1: Groq Llama 3.2 Vision
   try {
-    console.log('[Scanner] 🔍 Tier 0: Attempting Local Waterfall Engine (Server-Side Intelligence)...');
-    const localResult = await extractWithLocalBackend(imageDataUrl);
-    
-    // The backend now returns high-quality drug/dosage/expiry via its own Gemini integration.
-    if (localResult.drug && localResult.drug !== 'Unknown') {
-      console.log('[Scanner] ⭐ Success via Backend Intelligence:', localResult.drug);
-      const rxResult = await normalizeDrug(localResult.drug);
+    console.log('[Scanner] 🚀 Tier 1: Groq Llama Vision...');
+    const result = await extractWithGroq(base64);
+    if (result && result.drug !== 'Unknown') {
+      const rxResult = await normalizeDrug(result.drug);
       return {
-        ...localResult,
-        genericName: rxResult?.name || localResult.drug,
+        ...result,
+        drug: result.drug,
+        genericName: rxResult?.name || result.drug,
         rxcui: rxResult?.rxcui || '',
-        sourceTier: 'Tier 0: Local Engine (Cloud-Enhanced)'
+        sourceTier: 'Tier 1: Groq Cloud Vision'
       };
     }
-    
-    console.warn('[Scanner] Backend returned Unknown drug. Trying local refinement fallback...');
-    if (localResult.rawText && localResult.rawText.trim().length > 3) {
-      try {
-        const refined = await refineTextWithGemini(localResult.rawText, localResult);
-        if (refined.drug !== 'Unknown') {
-          return refined;
-        }
-      } catch (refineErr) {
-        console.warn('[Scanner] ⚠️ Frontend Refinement failed fallback.');
-      }
-    }
   } catch (err) {
-    if (err instanceof DOMException && err.name === 'AbortError') {
-      console.log('[Scanner] ❌ Local backend timed out (20s).');
-    } else {
-      console.log('[Scanner] ❌ Local backend unavailable (Check if main.py is running):', err);
-    }
+    console.error('[Scanner] Groq Tier failed:', err);
   }
 
-  // Tier 1: Gemini Vision (Cloud)
+  // Tier 2: Gemini 1.5 Flash Vision
   try {
-    console.log('[Scanner] ☁️ Tier 1: Falling back to Gemini Vision...');
-    const result = await extractWithGemini(imageDataUrl);
-    if (result.drug && result.drug !== 'Unknown') {
-      console.log('[Scanner] ⭐ Success via Gemini Vision:', result.drug);
-      return result;
+    console.log('[Scanner] ☁️ Tier 2: Gemini Flash Vision...');
+    const result = await extractWithGemini(base64);
+    if (result && result.drug !== 'Unknown') {
+      const rxResult = await normalizeDrug(result.drug);
+      return {
+        ...result,
+        drug: result.drug,
+        genericName: rxResult?.name || result.drug,
+        rxcui: rxResult?.rxcui || '',
+        sourceTier: 'Tier 2: Gemini Cloud Vision'
+      };
     }
-    console.warn('[Scanner] ⚠️ Gemini Vision returned Unknown drug. Trying Tier 2...');
   } catch (err) {
-    console.error('[Scanner] ❌ Gemini Vision failed:', err);
+    console.error('[Scanner] Gemini Tier failed:', err);
   }
 
-  // Tier 2: Free Cloud OCR
+  // Tier 3: OCR.Space + Regex
   try {
     const ocrText = await runFreeCloudOCR(imageDataUrl);
     const result = await fallbackRegexParser(ocrText);
     if (result.drug && result.drug !== 'Unknown') return result;
-    console.warn('[parser] Free cloud OCR returned Unknown drug. Trying Tier 3...');
   } catch (err) {
-    console.error('[parser] Tier 2 Free Cloud OCR failed. Falling back to Tier 3.');
+    console.error('[Scanner] Tier 3 Cloud OCR failed.');
   }
 
-  // Tier 3: Local OCR + Regex (100% Offline fallback)
-  const localText = await runLocalOCR(imageDataUrl, onOCRProgress);
-  return fallbackRegexParser(localText);
+  // Final fallback (Return empty structure)
+  return {
+    drug: 'Unknown',
+    genericName: 'Unknown',
+    rxcui: '',
+    dosage: null,
+    expiry: null,
+    manufacturer: null,
+    rawText: '',
+    sourceTier: 'Extraction Failed'
+  };
 }

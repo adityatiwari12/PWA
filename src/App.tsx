@@ -1,4 +1,4 @@
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import RootNavigator from './navigation/RootNavigator';
 
 /**
@@ -7,9 +7,9 @@ import RootNavigator from './navigation/RootNavigator';
  */
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <RootNavigator />
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 

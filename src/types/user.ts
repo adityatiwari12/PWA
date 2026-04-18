@@ -63,11 +63,6 @@ export interface UserProfile {
   hasMonitor?: boolean;
   
   preferredLanguage: 'en' | 'hi';
-  menstrualCycle?: {
-    isTracking: boolean;
-    lastPeriodDate: string;      // ISO string
-    averageCycleLength: number;
-  };
   createdAt: number;             
   updatedAt: number;
 }

@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/android": "^8.3.1",
+    "@capacitor/cli": "^8.3.1",
+    "@capacitor/core": "^8.3.1",
+    "@capacitor/ios": "^8.3.1",
     "@tanstack/react-query": "^5.99.0",
     "@types/leaflet": "^1.9.21",
     "dexie": "^4.4.2",
@@ -20,7 +24,6 @@
     "react-dom": "^19.2.4",
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.14.1",
-    "tesseract.js": "^7.0.0",
     "zustand": "^5.0.12"
   },
   "devDependencies": {

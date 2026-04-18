@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { 
-  Activity, 
   BrainCircuit, 
   TrendingUp, 
   TrendingDown,
-  Thermometer,
   Send,
   AlertTriangle,
   Bot

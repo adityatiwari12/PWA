@@ -2,7 +2,7 @@ import type { UserProfile } from '../types/user';
 import type { CyclePhase } from '../hooks/useCycleState';
 import type { InteractionCheckResult, InteractionSeverity } from '../types/medication';
 import type { VitalSign } from '../store/vitalsStore';
-import type { Medication } from '../store/medicationStore';
+import type { Medication } from '../types/medication';
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 

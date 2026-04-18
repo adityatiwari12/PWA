@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Pill, Plus, Clock, AlertTriangle, Archive, ChevronRight, Share2, Activity, Trash2, Edit3 } from 'lucide-react';
+import { Pill, Plus, Clock, AlertTriangle, Archive, Share2, Activity, Trash2, Edit3 } from 'lucide-react';
 import { useMedicationStore } from '../../store/medicationStore';
 import { useDiagnosticState } from '../../hooks/useDiagnosticState';
 /**
