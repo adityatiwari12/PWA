@@ -1,73 +1,88 @@
-# React + TypeScript + Vite
+# Sanjivani Health OS 🏥
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sanjivani is a lightweight, resilient, and state-driven Personal Health Operating System designed to simplify medication management and emergency response. Built with the **Roxy Design System**, it prioritizes clinical accuracy, speed, and actionable health insights.
 
-Currently, two official plugins are available:
+![Sanjivani Banner](https://img.shields.io/badge/Health-OS-E84040)
+![Platforms](https://img.shields.io/badge/Platform-PWA%20%7C%20Android%20%7C%20iOS-blue)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Key Features
 
-## React Compiler
+### 🔍 Intelligent Cloud Vision
+A dual-tier vision pipeline for medication scanning:
+- **Tier 1 (Groq)**: Ultra-fast extraction using Llama 3.2 11B Vision for sub-second response times.
+- **Tier 2 (Gemini)**: Robust fallback using Gemini 1.5 Flash for high-accuracy clinical entity recognition.
+- **Slim Footprint**: Zero local ML models bundled, reducing APK size dramatically.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🛡️ SOS & Emergency Network
+- **Instant SOS**: Globally accessible emergency trigger with pulse animation.
+- **Web-Triggered Alerts**: Automated webhook integration to notify emergency contacts and log events instantly.
+- **Nearby Services**: Map-integrated discovery for hospitals and pharmacies.
 
-## Expanding the ESLint configuration
+### 💊 Medication Management
+- **Roxy UI**: Clean, high-contrast white & red design for maximum readability.
+- **Smart Scheduling**: Automatic dose reminders and "Before/After Meal" toggles.
+- **Drug Interaction Check**: (Optional) Safety checks against known medication conflicts.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 📈 Vitals Tracking
+- Log and monitor blood pressure, SpO2, and heart rate with a history-first view.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🛠️ Technology Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **Frontend**: React 19 + TypeScript + Vite
+- **Styling**: Tailwind CSS (Roxy Design System)
+- **Mobile Bridge**: Capacitor 8 (Cross-platform Android/iOS)
+- **Database**: Dexie.js (IndexedDB for offline-first persistence)
+- **AI/Vision**: Groq Vision API & Google Gemini 1.5 Flash
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🏃 Getting Started
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Prerequisites
+- Node.js (Latest LTS)
+- Android Studio (for Android build)
+- Xcode (for iOS build - macOS only)
+
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/adityatiwari12/PWA.git
+   cd PWA
+   ```
+2. Install dependencies:
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+3. Setup Environment Variables:
+   Create a `.env` file in the root:
+   ```env
+   VITE_GROQ_API_KEY=your_groq_key
+   VITE_GEMINI_API_KEY=your_gemini_key
+   ```
+
+### Running Locally
+- **Web (Development)**: `npm run dev`
+- **Android**: 
+  ```bash
+  npm run build
+  npx cap sync android
+  npx cap open android
+  ```
+- **iOS**:
+  ```bash
+  npm run build
+  npx cap sync ios
+  npx cap open ios
+  ```
+
+---
+
+## 📦 Build & Optimization
+The project uses `HashRouter` and relative asset pathing to ensure 100% compatibility with Android WebViews and PWA environments.
+
+---
+
+## 📄 License
+MIT License. Created with ❤️ for Health OS.
