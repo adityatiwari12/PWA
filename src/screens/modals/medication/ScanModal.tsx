@@ -285,48 +285,46 @@ export default function Scan() {
   // --------------------------------------------------------------------------
   if (capturedImageUrl) {
     return (
-      <div className="flex flex-col flex-1 bg-gray-50 min-h-[calc(100vh-64px)] relative p-4">
+      <div className="flex flex-col bg-white h-[100dvh] relative overflow-hidden">
         {/* Header */}
-        <div className="flex items-center mb-6">
+        <div className="flex items-center px-5 pt-14 pb-3 bg-white shrink-0">
           <button
-            id="scan-back-btn"
             onClick={resetScan}
-            className="p-2 mr-2 bg-white rounded-full shadow-sm active:scale-95 transition-transform"
+            className="p-2 -ml-2 text-gray-700 active:scale-90 transition-transform"
           >
-            <ArrowLeft size={20} className="text-gray-700" />
+            <ArrowLeft size={24} strokeWidth={2.5} />
           </button>
-          <h2 className="text-xl font-bold text-gray-800">Scan Result</h2>
+          <h2 className="flex-1 text-center text-[18px] font-semibold text-gray-900 tracking-tight mr-8">
+            Scan Result
+          </h2>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6 flex flex-col items-center p-4">
-          {/* Captured / processed image */}
+        <div className="flex-1 overflow-y-auto px-5 pt-2 pb-32">
+          {/* Scanned Image Thumbnail */}
           <img
             src={scanResult?.processedImageUrl ?? capturedImageUrl}
             alt="Captured Medication"
-            className="w-full max-w-sm rounded-lg border border-gray-200 mb-4 object-cover max-h-64"
+            className="w-full h-[160px] object-cover rounded-[12px] mb-6 border border-gray-100 shadow-sm"
           />
 
-          {/* Processing stages */}
+          {/* Processing State */}
           {isProcessing && progressEvent && (
-            <div className="w-full py-6 flex flex-col items-center">
+            <div className="w-full py-10 flex flex-col items-center justify-center">
               {progressEvent.stage === 'preprocessing' && (
-                <RefreshCw className="animate-spin text-purple-600 mb-3" size={28} />
+                <RefreshCw className="animate-spin text-gray-400 mb-4" size={32} />
               )}
               {progressEvent.stage === 'analyzing' && (
-                <Cpu className="animate-pulse text-indigo-600 mb-3" size={28} />
+                <Cpu className="animate-pulse text-[#E84040] mb-4" size={32} />
               )}
               {progressEvent.stage === 'extracting' && (
-                <Cpu className="animate-pulse text-green-600 mb-3" size={28} />
+                <Cpu className="animate-pulse text-gray-800 mb-4" size={32} />
               )}
-
-              <p className="text-sm font-bold text-gray-700 mb-2">
+              <p className="text-[14px] font-medium text-gray-800 mb-3 text-center px-4">
                 {stageLabelFor(progressEvent)}
               </p>
-
-              {/* Indeterminate progress shimmer for Vision analysis */}
               {progressEvent.stage === 'analyzing' && (
-                <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
-                  <div className="bg-indigo-500 h-full w-full animate-pulse" />
+                <div className="w-32 bg-gray-100 h-1.5 rounded-full overflow-hidden mt-2">
+                  <div className="bg-[#E84040] h-full w-full animate-pulse" />
                 </div>
               )}
             </div>
@@ -334,85 +332,102 @@ export default function Scan() {
 
           {/* Results */}
           {!isProcessing && scanResult && (
-            <>
-              {/* Confidence badge */}
-              <div className="w-full flex items-center justify-between mb-3">
-                <h3 className="text-gray-800 font-bold">Detected Information</h3>
-                <ConfidenceBadge score={scanResult.confidence.score} />
+            <div className="flex flex-col">
+              
+              {/* Title Row with Badge */}
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[16px] font-medium text-gray-900">Detected Information</h3>
+                <span className="text-[12px] font-medium bg-[#F59E0B] text-white px-2.5 py-1 rounded-full whitespace-nowrap">
+                  {scanResult.confidence.score}% confidence
+                </span>
               </div>
 
-              {/* Field table */}
-              <div className="w-full space-y-3 mb-4 text-sm">
-                <div className="flex border-b border-gray-100 pb-2">
-                  <span className="text-gray-500 w-24">Drug:</span>
-                  <span className="font-bold text-gray-800">
-                    {effectiveDrug || <span className="text-red-400 italic">Not found</span>}
-                  </span>
+              {/* 3-Row Key-Value List */}
+              <div className="flex flex-col space-y-4 mb-8">
+                <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                  <span className="text-[12px] text-gray-500">Drug</span>
+                  <span className="text-[14px] font-medium text-gray-900 text-right ms-4">{effectiveDrug || 'Unknown'}</span>
                 </div>
-                <div className="flex border-b border-gray-100 pb-2">
-                  <span className="text-gray-500 w-24">Dosage:</span>
-                  <span className="font-medium text-gray-800">
-                    {effectiveDosage || 'Not found'}
-                  </span>
+                <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                  <span className="text-[12px] text-gray-500">Dosage</span>
+                  <span className="text-[14px] font-medium text-gray-900 text-right ms-4">{effectiveDosage || 'Not found'}</span>
                 </div>
-                <div className="flex border-b border-gray-100 pb-2">
-                  <span className="text-gray-500 w-24">Expiry:</span>
-                  <span className="font-medium text-gray-800">
-                    {effectiveExpiry || 'Not found'}
-                  </span>
+                <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                  <span className="text-[12px] text-gray-500">Expiry</span>
+                  <span className="text-[14px] font-medium text-gray-900 text-right ms-4">{effectiveExpiry || 'Not found'}</span>
                 </div>
               </div>
 
-              {/* Low-confidence fallback UI */}
+              {/* Warning Section (only if low confidence) */}
               {scanResult.confidence.isLow && (
-                <FallbackPanel
-                  reasons={scanResult.confidence.reasons}
-                  correction={manualCorrection}
-                  onChange={(field, value) =>
-                    setManualCorrection((prev: ManualCorrection) => ({ ...prev, [field]: value }))
-                  }
-                />
-              )}
+                <div className="border-l-[4px] border-[#F59E0B] bg-[#FFFBEB] rounded-r-lg p-4 mb-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle size={16} className="text-[#F59E0B]" />
+                    <h4 className="text-[14px] font-medium text-[#F59E0B]">Low confidence — please verify</h4>
+                  </div>
+                  
+                  {/* 3 Short Bullet Points */}
+                  {scanResult.confidence.reasons.length > 0 && (
+                    <ul className="text-[13px] text-gray-600 list-disc list-inside space-y-1 mb-4">
+                      {scanResult.confidence.reasons.slice(0, 3).map((r, i) => (
+                        <li key={i}>{r}</li>
+                      ))}
+                    </ul>
+                  )}
 
-              {/* Vision model raw response (collapsible) */}
-              <details className="w-full text-xs bg-gray-50 rounded-lg outline-none mt-4">
-                <summary className="font-medium text-gray-500 cursor-pointer p-2">
-                  View Vision AI Response
-                </summary>
-                <pre className="p-3 bg-gray-100 text-gray-600 whitespace-pre-wrap w-full font-mono mt-1 rounded-b-lg">
-                  {scanResult.rawOcrText || 'No response from Vision model.'}
-                </pre>
-              </details>
-            </>
+                  <hr className="border-amber-200/50 my-4" />
+
+                  {/* Correct if needed fields */}
+                  <p className="text-[12px] text-gray-500 mb-3">Correct if needed</p>
+                  <div className="flex flex-col space-y-4">
+                    {(
+                      [
+                        { key: 'drug',   placeholder: 'Drug name' },
+                        { key: 'dosage', placeholder: 'Dosage' },
+                        { key: 'expiry', placeholder: 'Expiry' },
+                      ] as { key: keyof ManualCorrection; placeholder: string }[]
+                    ).map(({ key, placeholder }) => (
+                      <input
+                        key={key}
+                        type="text"
+                        value={manualCorrection[key]}
+                        onChange={e => setManualCorrection((prev: ManualCorrection) => ({ ...prev, [key]: e.target.value }))}
+                        placeholder={placeholder}
+                        className="w-full bg-transparent border-b border-gray-300 text-[14px] text-gray-900 placeholder-gray-400 focus:border-gray-500 focus:outline-none pb-2"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+            </div>
           )}
         </div>
 
-        {/* Action buttons */}
-        <div className="flex space-x-3 mt-auto mb-20">
-          <button
-            id="scan-retake-btn"
-            onClick={resetScan}
-            disabled={isProcessing}
-            className="flex-1 py-3 rounded-xl bg-gray-200 text-gray-700 font-bold text-sm shadow-sm active:scale-95 transition-transform disabled:opacity-50"
-          >
-            Retake Photo
-          </button>
-          <button
-            id="scan-save-btn"
-            onClick={handleSave}
-            disabled={isProcessing || !scanResult}
-            className="flex-1 py-3 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] active:scale-95 transition-transform disabled:opacity-50"
-          >
-            <CheckCircle size={18} className="mr-2" /> Save Medication
-          </button>
+        {/* Fixed Bottom Bar */}
+        <div className="absolute bottom-0 left-0 right-0 bg-white p-5 border-t border-gray-100 flex flex-col z-10 pb-8">
+          {!isProcessing && scanResult?.confidence.isLow && (
+            <p className="text-center text-[12px] text-[#F59E0B] mb-3 font-medium">
+              Please review before saving
+            </p>
+          )}
+          <div className="flex gap-3">
+            <button
+              onClick={resetScan}
+              disabled={isProcessing}
+              className="flex-1 py-3.5 rounded-[12px] bg-white border border-gray-300 text-gray-800 font-medium text-[15px] active:scale-95 transition-transform disabled:opacity-50"
+            >
+              Retake
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={isProcessing || !scanResult}
+              className="flex-[1.5] py-3.5 rounded-[12px] bg-[#E84040] text-white font-medium text-[15px] active:scale-95 transition-transform disabled:opacity-50 shadow-sm"
+            >
+              Save medication
+            </button>
+          </div>
         </div>
-
-        {/* Warning if saving with low info */}
-        {!isProcessing && scanResult && scanResult.confidence.isLow && (
-          <p className="text-center text-xs text-amber-600 mb-4 flex items-center justify-center gap-1 -mt-16">
-            <AlertTriangle size={12} /> Please review the fields above before saving.
-          </p>
-        )}
       </div>
     );
   }
