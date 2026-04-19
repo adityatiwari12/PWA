@@ -28,6 +28,7 @@ import type { UserProfile } from '../../types/user';
 import { triggerEmergencyWebhook } from '../../lib/emergency';
 import { generateHealthResumePdf } from '../../lib/pdfGenerator';
 import { useVitalsStore } from '../../store/vitalsStore';
+import { useDiagnosticState } from '../../hooks/useDiagnosticState';
 
 export default function ProfileScreen() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -37,6 +38,7 @@ export default function ProfileScreen() {
   const [editForm, setEditForm] = useState<UserProfile | null>(null);
   const { medications, fetchMedications } = useMedicationStore();
   const cycle = useCycleState();
+  const diagnostic = useDiagnosticState();
 
   const [aiInsight, setAiInsight] = useState<string | null>(null);
   const [loadingInsight, setLoadingInsight] = useState(false);
@@ -89,7 +91,7 @@ export default function ProfileScreen() {
     setIsGeneratingPdf(true);
     try {
       const vitals = useVitalsStore.getState().vitals;
-      await generateHealthResumePdf(profile, medications, vitals, aiInsight);
+      await generateHealthResumePdf(profile, medications, vitals, aiInsight, diagnostic);
     } catch (err) {
       console.error('Failed to generate PDF resume', err);
     } finally {

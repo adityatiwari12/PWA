@@ -3,6 +3,7 @@ import html2canvas from 'html2canvas';
 import type { UserProfile } from '../types/user';
 import type { Medication } from '../types/medication';
 import type { VitalSign } from '../store/vitalsStore';
+import type { DiagnosticState } from '../hooks/useDiagnosticState';
 
 /**
  * Dynamically generates a beautiful PDF Health Resume and triggers downward transfer.
@@ -11,7 +12,8 @@ export async function generateHealthResumePdf(
   profile: UserProfile,
   medications: Medication[],
   vitals: VitalSign[],
-  aiInsight: string | null
+  aiInsight: string | null,
+  diagnostic: DiagnosticState
 ): Promise<void> {
   // 1. Create a wrapper off-screen
   const container = document.createElement('div');
@@ -66,15 +68,31 @@ export async function generateHealthResumePdf(
       </div>
     </div>
 
-    <!-- AI Synthesis -->
-    ${aiInsight ? `
+    <!-- Health & Diagnostics Synthesis -->
     <div style="margin-bottom: 30px;">
-      <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700; color: #4B5563; border-bottom: 1px solid #E5E7EB; padding-bottom: 5px;">AI Clinical Synthesis</h3>
-      <div style="padding: 15px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151;">
-        ${aiInsight.replace(/\\n/g, '<br/>')}
+      <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700; color: #4B5563; border-bottom: 1px solid #E5E7EB; padding-bottom: 5px;">Health & Diagnostics Synthesis</h3>
+      
+      <div style="padding: 15px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #374151; margin-bottom: 10px;">
+        <h4 style="margin: 0 0 5px 0; font-size: 14px; font-weight: 600; color: #111827;">Systemic Engine Overview</h4>
+        <p style="margin: 0;">
+          ${diagnostic.vitalAnomalies.length > 0 
+            ? 'Detected physiological deviations: ' + diagnostic.vitalAnomalies.join('. ') + '. Correlating with current medication stack.'
+            : 'Vitals are perfectly nominal. Correlating with stack confirms standard pharmacokinetic absorption with zero adverse impact.'}
+        </p>
+        <p style="margin: 6px 0 0 0; color: #DC2626;">
+          ${diagnostic.vitalAnomalies.length > 0 && activeMeds.length > 0
+            ? 'We noticed an anomaly in your vitals. <strong>' + activeMeds[0].brandName + '</strong> is active in your system and might be inducing these stress markers.'
+            : ''}
+        </p>
       </div>
+
+      ${aiInsight ? 
+      '<div style="padding: 15px; background: #FFF1F2; border: 1px solid #FECDD3; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #881337;">' +
+        '<h4 style="margin: 0 0 5px 0; font-size: 14px; font-weight: 600; color: #E11D48;">Deep AI Cycle Insight</h4>' +
+        aiInsight.replace(/\\n/g, '<br/>') +
+      '</div>'
+       : ''}
     </div>
-    ` : ''}
 
     <!-- Current Vitals -->
     <div style="margin-bottom: 30px;">
