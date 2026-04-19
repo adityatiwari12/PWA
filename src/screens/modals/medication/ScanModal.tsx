@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { 
   CheckCircle, ArrowLeft, RefreshCw, Cpu, 
-  AlertTriangle, Edit3, ChevronDown, ChevronUp, ShieldAlert,
+  AlertTriangle,
   Image as ImageIcon,
   Scan as ScanIcon
 } from 'lucide-react';
@@ -31,94 +31,7 @@ function stageLabelFor(evt: ScanProgressEvent): string {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Confidence Badge
-// ---------------------------------------------------------------------------
-function ConfidenceBadge({ score }: { score: number }) {
-  const color =
-    score >= 75 ? 'bg-emerald-100 text-emerald-700 border-emerald-300' :
-    score >= 55 ? 'bg-amber-100  text-amber-700  border-amber-300' :
-                  'bg-red-100    text-red-700    border-red-300';
 
-  return (
-    <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${color}`}>
-      {score}% confidence
-    </span>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Low-confidence Fallback Banner + Manual Correction Form
-// ---------------------------------------------------------------------------
-interface FallbackPanelProps {
-  reasons: string[];
-  correction: ManualCorrection;
-  onChange: (field: keyof ManualCorrection, value: string) => void;
-}
-
-function FallbackPanel({ reasons, correction, onChange }: FallbackPanelProps) {
-  const [open, setOpen] = useState(true);
-
-  return (
-    <div className="w-full mt-4 rounded-xl border border-amber-300 bg-amber-50 overflow-hidden">
-      {/* Header */}
-      <button
-        onClick={() => setOpen((o: boolean) => !o)}
-        className="w-full flex items-center justify-between px-4 py-3 text-amber-800 font-bold text-sm"
-        id="low-confidence-toggle"
-      >
-        <span className="flex items-center gap-2">
-          <ShieldAlert size={16} className="text-amber-600 shrink-0" />
-          Low confidence — please verify
-        </span>
-        {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-      </button>
-
-      {open && (
-        <div className="px-4 pb-4">
-          {/* Reasons list */}
-          {reasons.length > 0 && (
-            <ul className="text-xs text-amber-700 mb-3 list-disc list-inside space-y-0.5">
-              {reasons.map((r, i) => <li key={i}>{r}</li>)}
-            </ul>
-          )}
-
-          {/* Manual correction inputs */}
-          <p className="text-xs font-semibold text-amber-800 mb-2 flex items-center gap-1">
-            <Edit3 size={12} /> Correct the fields if needed:
-          </p>
-
-          <div className="space-y-2">
-            {(
-              [
-                { key: 'drug',   label: 'Drug name',    placeholder: 'e.g. Dolo 650' },
-                { key: 'dosage', label: 'Dosage',        placeholder: 'e.g. 500mg' },
-                { key: 'expiry', label: 'Expiry',        placeholder: 'e.g. 06/2026' },
-              ] as { key: keyof ManualCorrection; label: string; placeholder: string }[]
-            ).map(({ key, label, placeholder }) => (
-              <div key={key} className="flex flex-col gap-0.5">
-                <label
-                  htmlFor={`manual-${key}`}
-                  className="text-xs font-medium text-amber-800"
-                >
-                  {label}
-                </label>
-                <input
-                  id={`manual-${key}`}
-                  type="text"
-                  value={correction[key]}
-                  onChange={e => onChange(key, e.target.value)}
-                  placeholder={placeholder}
-                  className="w-full rounded-lg border border-amber-300 bg-white px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Main Scan Page
