@@ -275,7 +275,7 @@ export default function ProfileScreen() {
                   <p className="text-[12px] text-gray-400 mt-0.5">PDF • 500KB</p>
                 </div>
               </div>
-              <a href="/health_resume.pdf" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full flex items-center justify-center text-teal-600 bg-teal-50 active:scale-90 transition-transform">
+              <a href="/health_resume.pdf" download="Sanjivani_Health_Resume.pdf" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full flex items-center justify-center text-teal-600 bg-teal-50 active:scale-90 transition-transform">
                 <Download size={17} />
               </a>
             </div>
