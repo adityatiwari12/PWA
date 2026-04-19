@@ -10,7 +10,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', 'health_resume.pdf'],
+      includeAssets: ['favicon.ico', 'sanjivani_logo.svg', 'apple-touch-icon.png', 'mask-icon.svg', 'health_resume.pdf'],
       manifest: {
         name: 'Sanjivani Health OS',
         short_name: 'Sanjivani',
