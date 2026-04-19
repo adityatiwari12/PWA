@@ -1,13 +1,20 @@
 <div align="center">
-<img src="sanjivani_logo.svg" width="180" alt="Sanjivani Logo"/>
 
-<br/><br/>
-
-<!-- rest of your animated capsule-render banner below -->
+<img src="sanjivani_logo.svg" width="160" alt="Sanjivani Logo"/>
 
 <br/>
 
-<!-- Badges row 1 -->
+<img width="100%" src="https://capsule-render.vercel.app/api?type=venom&height=220&text=संजीवनी%20·%20Sanjivani&fontSize=62&color=0:064D3D,40:0A6E57,70:1D9E75,100:5DCAA5&fontColor=ffffff&animation=fadeIn&fontAlignY=52&desc=Personal%20Health%20Operating%20System%20·%20Kriyeta%205.0&descAlignY=74&descSize=16&descColor=c8f0e0"/>
+
+<br/>
+
+<!-- Hackathon badge -->
+<img src="https://img.shields.io/badge/🏆_Kriyeta_5.0-Hackathon_Build-0A6E57?style=for-the-badge"/>
+&nbsp;
+<img src="https://img.shields.io/badge/👥_Team-Hexa_Binary-1D9E75?style=for-the-badge"/>
+
+<br/><br/>
+
 <img src="https://img.shields.io/badge/React_Native-0.74-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
 <img src="https://img.shields.io/badge/Expo_SDK-51-000020?style=for-the-badge&logo=expo&logoColor=white"/>
 <img src="https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white"/>
@@ -15,408 +22,536 @@
 
 <br/><br/>
 
-<!-- Badges row 2 -->
-<img src="https://img.shields.io/badge/Platform-Android_%7C_iOS-1D9E75?style=for-the-badge&logo=android&logoColor=white"/>
-<img src="https://img.shields.io/badge/IoT-ESP32_Wearable-B06A10?style=for-the-badge&logo=espressif&logoColor=white"/>
-<img src="https://img.shields.io/badge/Language-Hindi_%7C_English-8C2E1A?style=for-the-badge"/>
-<img src="https://img.shields.io/badge/Status-Active_Build-4C3FA0?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS-1D9E75?style=for-the-badge&logo=android&logoColor=white"/>
+<img src="https://img.shields.io/badge/IoT-ESP32%20Wearable-B06A10?style=for-the-badge&logo=espressif&logoColor=white"/>
+<img src="https://img.shields.io/badge/AI-RAG%20%2B%20ML%20Kit-4C3FA0?style=for-the-badge&logo=openai&logoColor=white"/>
+<img src="https://img.shields.io/badge/Language-Hindi%20%7C%20English-8C2E1A?style=for-the-badge"/>
 
 <br/><br/>
 
 <p>
-<a href="#-overview">Overview</a> ·
-<a href="#-architecture">Architecture</a> ·
-<a href="#-features">Features</a> ·
+<a href="#-the-problem">Problem</a> ·
+<a href="#-the-solution">Solution</a> ·
+<a href="#-five-layers">Five Layers</a> ·
+<a href="#-system-architecture">Architecture</a> ·
 <a href="#-tech-stack">Stack</a> ·
 <a href="#-data-models">Data Models</a> ·
 <a href="#-firebase">Firebase</a> ·
 <a href="#-screen-map">Screens</a> ·
-<a href="#-setup">Setup</a> ·
-<a href="#-conventions">Conventions</a>
+<a href="#-setup">Setup</a>
 </p>
 
 </div>
 
 ---
 
-<!-- Animated divider -->
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
 
-## ✦ Overview
+## 🏆 Kriyeta 5.0 — Team Hexa Binary
+
+<div align="center">
+
+| | |
+|:---:|:---:|
+| **Hackathon** | Kriyeta 5.0 |
+| **Team** | Hexa Binary |
+| **Problem Statement** | PS2 — Medication Interaction & Expiry Tracker |
+| **Track** | Healthcare Technology |
+| **Platform** | Mobile (Android / iOS) + IoT Wearable + Web Emergency Endpoint |
+
+</div>
+
+> Sanjivani solves PS2 at its core — then extends the solution into a full Personal Health OS that makes every feature more meaningful by connecting it to everything else.
+
+---
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
+
+## 💔 The Problem
+
+<div align="center">
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&pause=1000&color=DC2626&center=true&vCenter=true&width=700&lines=India+has+230+million+people+over+50+managing+chronic+conditions.;The+average+elderly+patient+sees+3.2+different+doctors.;None+of+those+doctors+know+what+the+others+prescribed.;Adverse+drug+reactions+cause+3-5%25+of+all+hospital+admissions.;That%27s+one+preventable+crisis+every+90+seconds." alt="Problem statement typing animation"/>
+</div>
+
+<br/>
 
 <table>
 <tr>
-<td width="60%">
+<td width="50%" valign="top">
 
-**Sanjivani** (`संजीवनी`) is the mythological life-restoring herb from the Ramayana — used by Hanuman to revive Lakshmana. The name reflects the platform's mission precisely.
+### The Daily Reality
 
-India has **230 million people over 50** managing chronic conditions. The majority take 4–8 medications, prescribed by 3–4 different specialists who have zero visibility into each other's prescriptions. No system connects what a patient is **taking**, what their body is **doing**, and who their family needs to **contact** when something goes wrong.
+An elderly person in Indore manages **7 medications** for blood pressure, diabetes, and thyroid — prescribed by 3 different specialists. Last month, her doctor added a painkiller. Nobody flagged that it reacts dangerously with her blood thinner.
 
-Sanjivani is that system.
+She took both. Her son in Bangalore found out three days later.
+
+**This is not a rare tragedy. This is Tuesday.**
 
 </td>
-<td width="40%" align="center">
+<td width="50%" valign="top">
 
-```
-┌─────────────────────────┐
-│   💊 Medication Engine  │
-│   🏥 Health Resume      │
-│   📡 IoT Vitals Patch   │
-│   🔴 Emergency QR       │
-│   🌙 Cycle Intelligence │
-└──────────┬──────────────┘
-           │
-     Firebase Core
-           │
-    ┌──────┴──────┐
-    │   Patient   │
-    │   Guardian  │
-    └─────────────┘
-```
+### Why Existing Apps Fail
+
+| App | What it does | What it misses |
+|---|---|---|
+| Medisafe | Reminds you | Knows nothing about what you already take |
+| ABHA | Stores records | No interaction check, no vitals, no alerts |
+| Generic trackers | Logs pills | Cannot detect adverse reactions |
+| **Sanjivani** | **All of the above** | **Nothing** |
 
 </td>
 </tr>
 </table>
 
-### The Five Layers
-
 <div align="center">
 
-| | Layer | Core Job |
-|:---:|---|---|
-| 💊 | **Medication Intelligence** | Scan → Normalize → Interact → Price → Schedule → Wearable remind |
-| 🏥 | **Health Profile & Resume** | Upload docs → AI parse → living Health Resume → feeds everything |
-| 📡 | **IoT Vitals Engine** | ESP32 wearable → live SpO2/HR/Temp → fall & crash detection → anomaly correlation |
-| 🔴 | **Emergency Response** | Lock screen QR → SOS flow → guardian teleconsult → doctor health map |
-| 🌙 | **Cycle Intelligence** | Phase tracking → vitals correlation → hormonal pattern detection → PCOS early signals |
+```
+The 3 specialists who treat Ramesh have never spoken to each other.
+The pharmacist who dispenses his pills has no complete medication list.
+The reminder app on his phone has no idea what he's already taking.
+
+Every checkpoint that should have caught the dangerous combination — failed.
+Not because people didn't care. Because the information was never connected.
+```
 
 </div>
 
-### Who Uses This
+---
 
-| Role | Who | How They Interact |
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
+
+## ✨ The Solution
+
+<div align="center">
+
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=20&pause=800&color=1D9E75&center=true&vCenter=true&width=700&lines=Sanjivani+is+the+family+member+that%27s+always+there.;It+knows+every+medication+you+take.;It+watches+your+vitals+while+you+sleep.;It+alerts+your+son+before+you+collapse.;It+tells+the+paramedic+everything+in+3+seconds." alt="Solution typing animation"/>
+
+</div>
+
+<br/>
+
+<div align="center">
+
+### One sentence: what Sanjivani does
+
+**Sanjivani connects what you take, what your body does, and who your family needs to call — in one system, in real time.**
+
+</div>
+
+<br/>
+
+<table>
+<tr>
+<td align="center" width="20%">
+<img src="https://media.giphy.com/media/3oKIPEqDGUULpEU0aQ/giphy.gif" width="60"/>
+<br/><b>Scan</b>
+<br/><sub>Pill bottle OCR</sub>
+</td>
+<td align="center" width="20%">
+<img src="https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif" width="60"/>
+<br/><b>Detect</b>
+<br/><sub>Drug interactions</sub>
+</td>
+<td align="center" width="20%">
+<img src="https://media.giphy.com/media/3oEjI5VtIhHvK37WYo/giphy.gif" width="60"/>
+<br/><b>Monitor</b>
+<br/><sub>Live vitals (IoT)</sub>
+</td>
+<td align="center" width="20%">
+<img src="https://media.giphy.com/media/l0HlBO7eyXzSZkJri/giphy.gif" width="60"/>
+<br/><b>Alert</b>
+<br/><sub>Guardian + SOS</sub>
+</td>
+<td align="center" width="20%">
+<img src="https://media.giphy.com/media/3o7TKwxYkeW0ZvTqsU/giphy.gif" width="60"/>
+<br/><b>Connect</b>
+<br/><sub>Emergency QR</sub>
+</td>
+</tr>
+</table>
+
+---
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
+
+## 🧩 Five Layers
+
+<div align="center">
+
+```
+╔══════════════════════════════════════════════════════════════════════════╗
+║                         SANJIVANI PLATFORM                               ║
+╠══════════════╦═══════════════╦══════════════════╦═══════════════════════╣
+║  💊          ║  🏥           ║  📡              ║  🔴                   ║
+║  Medication  ║  Health       ║  IoT Vitals      ║  Emergency            ║
+║  Intelligence║  Resume       ║  & Safety        ║  Response             ║
+╠══════════════╩═══════════════╩══════════════════╩═══════════════════════╣
+║                    🌙  Cycle Intelligence (cross-cutting)                 ║
+╠══════════════════════════════════════════════════════════════════════════╣
+║                         Firebase Backend                                  ║
+║          Firestore · Realtime DB · Cloud Functions · FCM · Auth          ║
+╠══════════╦═══════════╦══════════════╦═══════════════════════════════════╣
+║ RxNorm   ║ OpenFDA   ║ Jan Aushadhi ║ RAG Backend · ML Kit · Maps      ║
+╚══════════╩═══════════╩══════════════╩═══════════════════════════════════╝
+```
+
+</div>
+
+<br/>
+
+### 💊 Layer 1 — Medication Intelligence Engine *(PS2 Core)*
+
+> The direct answer to Problem Statement 2. Every medication flows through this pipeline.
+
+<div align="center">
+
+```
+📷 Camera Scan
+      │
+      ▼
+┌─────────────────────┐
+│  ML Kit OCR         │  ← On-device. No image leaves the phone.
+│  Extract:           │
+│  Name · Dose · Qty  │
+│  Expiry Date        │
+└──────────┬──────────┘
+           │  User edits → confirms
+           ▼
+┌─────────────────────┐
+│  RxNorm Normalize   │  ← "Crocin" → "Paracetamol" (canonical)
+│  Brand → Generic    │
+│  + rxcui lookup     │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│  OpenFDA Interaction│  ← New drug × every existing medication
+│  Combinatorial Check│    Not a 2-drug lookup. Full graph query.
+└──────────┬──────────┘
+           │
+     ┌─────┴──────┐
+     ▼            ▼
+🔴 BLOCKED    🟡 WARN        🟢 OK
+Contraindicated  Acknowledge   Proceed
+     │            │            │
+     └────────────┴────────────┘
+                  │
+                  ▼
+┌─────────────────────┐
+│  💰 Price Compare   │  ← Jan Aushadhi + 1mg + PharmEasy
+│  Jan Aushadhi price │    Shows % savings + nearest Kendra (GPS)
+│  vs market price    │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│  📅 Schedule Builder│  ← "Take 2 tablets twice daily after meals"
+│  NLP → structured   │    NLP extracts: time, qty, food dependency
+│  schedule           │
+└──────────┬──────────┘
+           │
+     ┌─────┴──────────────┐
+     ▼                    ▼
+📱 Push Notification  ⌚ Mi Band Reminder
+   FCM (Zomato-style)    Mi Band Notify SDK
+                         + Health Connect
+                         + HealthKit fallback
+```
+
+</div>
+
+**Also includes:** Expiry alerts at 30d → 7d → 1d · Vaccination reminders (age-based Indian schedule)
+
+---
+
+### 🏥 Layer 2 — Health Profile & Resume
+
+> The data backbone. Every other layer reads from it. Not a document store — a living AI-maintained health summary.
+
+<div align="center">
+
+| Input Source | What's Extracted | Where It Goes |
 |---|---|---|
-| **Patient** | Elderly individual (60+), likely tech-unfamiliar | Voice, wearable reminders, large-text UI, Hindi-first |
-| **Guardian** | Son / daughter / spouse, often remote | Vitals dashboard, anomaly alerts, teleconsult booking |
-| **Emergency Responder** | Paramedic, doctor, bystander | Scans QR — no app, no login required |
-| **Doctor (Teleconsult)** | Medical professional | Receives AI-generated health report before call |
+| Onboarding form | Blood type, allergies, conditions, contacts | Profile + Emergency QR |
+| Uploaded reports (PDF/JPG) | Diagnoses, medications, lab values, dates | Health Resume |
+| Medication inventory | Active drugs, dosages, interactions | Health Resume + RAG |
+| IoT vitals history | Trends, anomalies, baseline | Health Resume + Cycle |
+| Teleconsultation notes | Doctor findings, new prescriptions | Health Resume |
 
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
+**The Health Resume feeds:** Emergency QR endpoint · RAG assistant context · Teleconsult AI report · Cycle Intelligence baseline
 
-## 🏗 Architecture
-
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                         SANJIVANI PLATFORM                           │
-├──────────────┬─────────────────┬────────────────┬────────────────────┤
-│  Medication  │  Health Profile │  IoT Engine    │  Emergency Layer   │
-│  Intelligence│  & Resume       │  (Client Only) │  + Cycle Intel     │
-├──────────────┴─────────────────┴────────────────┴────────────────────┤
-│                        Firebase Backend                               │
-│         Firestore · Realtime DB · Cloud Functions · FCM · Auth       │
-├──────────────┬─────────────────┬────────────────┬────────────────────┤
-│  RxNorm API  │  OpenFDA API    │  Jan Aushadhi  │  RAG Backend       │
-│  (normalize) │  (interactions) │  + 1mg/PharmEsy│  (Voice Assistant) │
-└──────────────┴─────────────────┴────────────────┴────────────────────┘
-
-Separate Repos (NOT in this codebase):
-  ├── IoT Firmware        → ESP32 / Arduino (C/C++)
-  ├── Emergency Web QR   → Next.js (public endpoint)
-  └── Cloud Functions    → Firebase Functions (Node.js)
-```
-
-### Data Flow at a Glance
-
-```
-Pill Scan ──→ ML Kit OCR ──→ RxNorm ──→ OpenFDA Interact ──→ Jan Aushadhi Price
-                                                    │
-                                                    ▼
-                                          Medication Inventory
-                                                    │
-                                    ┌───────────────┴───────────────┐
-                                    │          Health Resume         │
-                                    │  (auto-updated, always live)  │
-                                    └───────────────┬───────────────┘
-                                                    │
-                              ┌─────────────────────┼──────────────────────┐
-                              ▼                     ▼                      ▼
-                     Emergency QR            RAG Assistant         Cycle Intelligence
-                    (public endpoint)     (uses your data)       (vitals + cycle phases)
-                              │
-                    IoT Patch ──→ Firebase RTDB ──→ Anomaly Detector
-                              │                           │
-                              └── Fall/Crash ──→ SOS ──→ Guardian Alert
-                                                          │
-                                                 Doctor Health Map
-                                                          │
-                                              Teleconsult Booking
-                                                          │
-                                               Post-consult Notes ──→ Health Resume
-```
-
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
-
-## ✦ Features
-
-<details>
-<summary><b>💊 &nbsp; Medication Intelligence Engine</b> &nbsp;—&nbsp; <i>click to expand</i></summary>
-<br/>
-
-The core of PS2 (Medication Interaction & Expiry Tracker). Every medication added flows through this full pipeline:
-
-```
-Camera Scan
-    │
-    ▼
-ML Kit OCR (on-device, no network)
-Extract: name · dosage · quantity · expiry
-    │
-    ▼
-Editable Confirmation Form
-User corrects any misread field
-    │
-    ▼
-RxNorm Normalization
-Brand name ──→ canonical generic name + rxcui
-    │
-    ▼
-OpenFDA Interaction Check
-New drug × entire existing inventory (combinatorial)
-    │
-    ├── 🔴 CONTRAINDICATED ──→ BLOCKED. Cannot add.
-    ├── 🟡 MAJOR CAUTION   ──→ Warning shown. User must acknowledge.
-    └── 🟢 MINOR / NONE    ──→ Proceed.
-    │
-    ▼
-Jan Aushadhi Price Compare
-Generic equivalent + INR savings + nearest Kendra (GPS)
-Also: 1mg + PharmEasy market price
-    │
-    ▼
-Add to Inventory + Health Resume auto-updates
-    │
-    ▼
-Dosage Schedule Builder
-Natural language input ──→ NLP parse ──→ structured schedule
-    │
-    ▼
-Push Notifications (FCM)
-+ Mi Band direct (Mi Band Notify SDK)
-+ Health Connect (Android) / HealthKit (iOS) fallback
-+ Vaccination reminders (age-based Indian schedule)
-```
-
-**Expiry Tracking:** Alerts at 30 days → 7 days → 1 day before expiry.
-
-</details>
+</div>
 
 ---
 
-<details>
-<summary><b>🏥 &nbsp; Health Profile & Resume</b> &nbsp;—&nbsp; <i>click to expand</i></summary>
+### 📡 Layer 3 — IoT Vitals & Safety Engine
+
+> Patient-centric. Home-based. The feedback loop that no pure-software system can replicate.
+
+<div align="center">
+
+**Hardware (ESP32 wearable — separate firmware repo)**
+
+| Sensor | Measures | Accuracy |
+|---|---|---|
+| MAX30102 | SpO2 + Heart Rate | ±2% SpO2 · ±3 BPM |
+| DS18B20 | Body Temperature | ±0.5°C |
+| MPU6050 | 6-axis IMU (fall + crash) | — |
+| ESP32 Core | Wi-Fi + BLE + 240MHz | — |
+| Battery | 3.7V LiPo USB-C | ~72h continuous |
+
+</div>
+
 <br/>
 
-The data backbone. Every other module reads from it. Not a document store — a living AI-maintained health summary.
+**The Innovation: Medication–Vitals Correlation**
 
-**Onboarding (4 steps):**
-1. Personal — name, DOB, blood type, height, weight
-2. Medical — allergies, chronic conditions, emergency contacts
-3. Documents — upload reports, prescriptions, discharge summaries
-4. Role — Patient or Guardian
-
-**Health Resume** auto-compiles from:
-- Manual onboarding inputs
-- AI-parsed uploaded documents (OCR + NLP extracts diagnoses, medications, dates, doctor names)
-- Active medication inventory
-- IoT vitals trends
-- Teleconsultation notes
-
-**The Resume feeds:**
-- Emergency QR public endpoint (pre-rendered, cached)
-- RAG assistant context
-- Teleconsultation AI report
-- Cycle Intelligence baseline
-
-</details>
-
----
-
-<details>
-<summary><b>📡 &nbsp; IoT Vitals & Safety Engine</b> &nbsp;—&nbsp; <i>click to expand</i></summary>
-<br/>
-
-> **This app is the client only.** The ESP32 firmware lives in a separate repo. This app reads from Firebase RTDB — it does not write vitals.
-
-**Hardware (separate repo):**
 ```
-ESP32 Core          — dual-core 240MHz, Wi-Fi + BLE
-MAX30102            — SpO2 + Heart Rate (±2% accuracy)
-DS18B20             — Body Temperature (±0.5°C)
-MPU6050             — 6-axis IMU for fall + crash detection
-Power               — 3.7V LiPo, USB-C, ~72h battery
+                    ┌─────────────────────────────────────────┐
+                    │  You added Ibuprofen at 8:00 PM         │
+                    └─────────────────────────────────────────┘
+                                        │
+                              6 hours later...
+                                        │
+                                        ▼
+                    ┌─────────────────────────────────────────┐
+                    │  IoT patch: Heart Rate spike detected   │
+                    │  HR: 147 BPM  (threshold: >150)         │
+                    └─────────────────────────────────────────┘
+                                        │
+                              Cloud Function fires
+                                        │
+                                        ▼
+                    ┌─────────────────────────────────────────┐
+                    │  ⚠️  POSSIBLE ADVERSE REACTION           │
+                    │  "Ibuprofen added 6 hrs ago"            │
+                    │  "Known interaction with Warfarin"      │
+                    │  → Recommend immediate consultation     │
+                    └─────────────────────────────────────────┘
+                                        │
+                            No other consumer app does this.
 ```
 
-**What this app displays:**
-- Real-time SpO2, HR, temperature (30s intervals, 5s in alert state)
-- 24h / 7d / 30d trend charts
-- Anomaly alerts with medication correlation flag
-- Guardian remote vitals dashboard
+**Fall & Crash Detection Flow:**
 
-**Fall & Crash Detection Response UI:**
 ```
 MPU6050 detects event (firmware)
     │
-Firebase RTDB write
+    ├── Fall:  >3G spike + horizontal orientation >3s
+    └── Crash: >4G deceleration + GPS velocity drop
+
+    ▼
+30-second cancel window (patient can dismiss false positive)
     │
-App receives alert
-    │
-30-second cancel countdown shown
-    │
-├── Patient cancels ──→ False alarm logged
-└── Timeout / no cancel ──→ SOS ACTIVATED
-        │
-        ├── Guardian push alert + live GPS
-        ├── Emergency QR updated (live vitals appended)
-        ├── Live vitals stream to guardian dashboard
-        └── Doctor Health Map shown with teleconsult CTA
+    ├── Cancelled → false alarm logged
+    └── Timeout  → SOS ACTIVATED
+                      │
+        ┌─────────────┼─────────────┬─────────────────┐
+        ▼             ▼             ▼                  ▼
+  Guardian      Emergency QR   Live vitals      Doctor Health
+  push + GPS    live vitals    stream to        Map → Book
+  location      appended       guardian         teleconsult
 ```
-
-**Anomaly → Medication Correlation:**
-When vitals breach threshold, system checks medications added in last 72 hours and flags possible adverse reactions. No other consumer health app does this.
-
-</details>
 
 ---
 
-<details>
-<summary><b>🔴 &nbsp; Emergency Response Layer</b> &nbsp;—&nbsp; <i>click to expand</i></summary>
-<br/>
+### 🔴 Layer 4 — Emergency Response
 
-**Emergency QR:**
-- Persistent lock screen widget — accessible without unlocking
-- Encodes unique HTTPS URL (UUID v4 token) → public read-only web endpoint
-- Endpoint displays: name, blood type, allergies, active medications, chronic conditions, emergency contacts
-- **No app. No login. No JavaScript required.** Loads in <2s on 3G.
-- User can revoke + regenerate token at any time
-
-**SOS Mode:**
-- Triggered by: fall detection, crash detection, critical vitals threshold, or manual
-- 30-second cancel window before escalating
-- On activation: live vitals appended to QR endpoint, guardian alert with GPS, teleconsult flow
-
-**Guardian Teleconsultation Flow:**
-1. Guardian receives anomaly alert
-2. "Book Teleconsult" CTA in notification
-3. Doctor Health Map — geo-filtered by anomaly type / specialty
-4. Booking confirmed
-5. AI report auto-generated from Health Resume + anomaly event → sent to doctor
-6. Post-call: doctor notes + prescriptions ingested back into Health Resume
-
-</details>
-
----
-
-<details>
-<summary><b>🌙 &nbsp; Cycle Intelligence</b> &nbsp;—&nbsp; <i>click to expand</i></summary>
-<br/>
-
-Cycle Intelligence is Sanjivani's fifth layer — a vitals-aware menstrual health module that goes beyond simple period tracking by correlating IoT physiological data with cycle phases.
-
-**What it tracks:**
-
-| Phase | Days (avg) | What the system monitors |
-|---|---|---|
-| Menstruation | 1–5 | SpO2 dips, elevated HR, temperature baseline |
-| Follicular | 6–13 | Temperature normalization, HR patterns |
-| Ovulation | ~14 | Basal temperature spike (0.2–0.5°C), HR variability |
-| Luteal | 15–28 | Sustained temperature elevation, SpO2 patterns |
-
-**How it works:**
-```
-User logs cycle start date + duration history
-    │
-    ▼
-System calculates current phase
-    │
-    ▼
-IoT patch vitals are overlaid on phase calendar
-(BBT-style temperature tracking, HR, SpO2)
-    │
-    ▼
-Pattern Engine compares readings to phase-expected ranges
-    │
-    ├── Within expected range ──→ Logged, no alert
-    └── Outside expected range ──→
-            │
-            ├── Irregular cycle flag
-            ├── Unexpected temperature deviation alert
-            ├── Unusual HR pattern across cycle phases
-            └── Early PCOS / hormonal imbalance signal
-                (informational only — not a diagnosis)
-```
-
-**System Integration:**
-
-The Cycle Intelligence module is not isolated. It cross-references:
-- **Medication history** — certain medications affect cycle regularity or temperature readings (e.g., hormonal medications, NSAIDs affecting BBT)
-- **Health Resume** — diagnosed conditions that interact with cycle health (thyroid, diabetes, PCOS history)
-- **RAG Assistant** — voice queries like "is my temperature normal this week?" are answered in cycle context
-
-**What it is not:**
-This feature provides informational pattern signals. It explicitly does **not** replace medical diagnosis. All insights include a medical consultation prompt. The PCOS early signal is a pattern observation, not a clinical assessment.
-
-**Data stored per cycle entry:**
-```typescript
-CycleEntry {
-  date: string              // ISO 8601
-  phase: CyclePhase         // 'menstruation' | 'follicular' | 'ovulation' | 'luteal'
-  dayOfCycle: number
-  userLogged: {
-    flow?: 'light' | 'medium' | 'heavy' | 'spotting'
-    symptoms?: string[]
-    mood?: string
-  }
-  vitalsCorrelated: {
-    bbt: number             // basal body temperature (°C)
-    hrAvg: number           // average HR that day
-    spo2Avg: number         // average SpO2 that day
-  }
-  flags: CycleFlag[]        // system-detected anomalies
-}
-```
-
-</details>
-
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
-
-## ⚙ Tech Stack
+> The feature that works when everything else fails.
 
 <div align="center">
 
-| Category | Technology |
-|---|---|
-| **Framework** | React Native 0.74+ · Expo SDK 51 |
-| **Language** | TypeScript (strict — zero `any`) |
-| **Navigation** | Expo Router v3 (file-based) |
-| **Global State** | Zustand |
-| **Server State** | React Query (TanStack) |
-| **Styling** | NativeWind v4 (Tailwind for RN) |
-| **Animations** | React Native Reanimated v3 |
-| **Gestures** | React Native Gesture Handler |
-| **Backend** | Firebase (Firestore + RTDB + Auth + Functions + FCM) |
-| **OCR** | Google ML Kit Text Recognition (on-device) |
-| **Drug Data** | RxNorm API + OpenFDA API |
-| **Price Compare** | Jan Aushadhi dataset + 1mg + PharmEasy APIs |
-| **Voice** | Expo Speech + @react-native-voice/voice |
-| **Wearable** | Mi Band Notify SDK + Health Connect + HealthKit |
-| **Maps** | React Native Maps + Expo Location |
-| **Forms** | React Hook Form + Zod |
-| **Icons** | Lucide React Native |
-| **Storage** | Expo SecureStore (sensitive) + AsyncStorage |
-| **Testing** | Jest + React Native Testing Library |
-| **Package Manager** | `pnpm` (not npm, not yarn) |
+```
+┌──────────────────────────────────────────────────┐
+│              EMERGENCY QR ENDPOINT                │
+│                                                   │
+│  ✓ Accessible from lock screen — no unlock needed │
+│  ✓ Public HTTPS URL — no app, no login, no JS     │
+│  ✓ Loads in <2 seconds on 3G                      │
+│  ✓ Displays: Blood type · Allergies · Meds        │
+│              Conditions · Emergency contacts      │
+│  ✓ SOS mode: Live vitals appended automatically   │
+│  ✓ Token revocable + regeneratable at any time    │
+└──────────────────────────────────────────────────┘
+```
+
+**Guardian Teleconsultation Flow** — triggered automatically on anomaly:
+
+```
+Anomaly Alert
+    │
+    ▼
+Guardian receives push notification
+    │
+    ▼
+"Book Teleconsultation" CTA in notification
+    │
+    ▼
+Doctor Health Map — geo-filtered by anomaly type / specialty
+    │
+    ▼
+Booking confirmed → AI report auto-generated from Health Resume
+    │
+    ▼
+Doctor receives report BEFORE the call begins
+    │
+    ▼
+Post-call: notes + prescriptions → Health Resume (auto-ingested)
+```
 
 </div>
+
+---
+
+### 🌙 Layer 5 — Cycle Intelligence
+
+> A vitals-aware menstrual health module. Connects IoT physiological data with cycle phases to surface patterns no period tracker ever could.
+
+<div align="center">
+
+| Phase | Avg Days | What Sanjivani Monitors |
+|:---:|:---:|---|
+| 🔴 Menstruation | 1–5 | SpO2 dips, elevated HR, temperature baseline |
+| 🟢 Follicular | 6–13 | Temperature normalization, HR variability |
+| 🟡 Ovulation | ~14 | BBT spike 0.2–0.5°C, HR pattern shift |
+| 🟣 Luteal | 15–28 | Sustained temp elevation, SpO2 patterns |
+
+</div>
+
+**Cross-system integration:**
+
+```
+Cycle Phase (current)
+    ├── → IoT vitals are compared against phase-expected ranges
+    ├── → Medication history checked for cycle-affecting drugs
+    │       (NSAIDs affect BBT · hormonal meds affect regularity)
+    ├── → Health Resume provides diagnosed conditions context
+    │       (thyroid · diabetes · PCOS history)
+    └── → RAG assistant answers in cycle context
+            "Is my temperature normal this week?" → phase-aware answer
+
+Pattern Engine flags:
+    ├── Irregular cycle length
+    ├── Unexpected BBT spike / drop
+    ├── Elevated HR across phases
+    ├── Low SpO2 pattern
+    ├── Possible PCOS signal (informational only — not a diagnosis)
+    └── Medication affecting cycle regularity
+```
+
+> ⚠️ This feature provides informational pattern signals only. It explicitly does not replace medical diagnosis. All insights include a consultation prompt.
+
+---
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
+
+## 🏗 System Architecture
+
+<div align="center">
+
+```
+                        ┌─────────────────────────────────────┐
+                        │            MOBILE APP               │
+                        │     React Native · Expo · TypeScript │
+                        └──────────────────┬──────────────────┘
+                                           │
+              ┌────────────────────────────┼──────────────────────────┐
+              │                            │                          │
+              ▼                            ▼                          ▼
+   ┌──────────────────┐      ┌─────────────────────┐    ┌────────────────────┐
+   │  DRUG INTEL APIs │      │   FIREBASE BACKEND  │    │   IOT PATCH        │
+   │                  │      │                     │    │   (separate repo)  │
+   │ • RxNorm (NLM)   │      │ • Firestore         │    │                    │
+   │ • OpenFDA        │◄────►│ • Realtime Database │◄───│ ESP32 + sensors    │
+   │ • Jan Aushadhi   │      │ • Cloud Functions   │    │ MAX30102 (SpO2/HR) │
+   │ • 1mg / PharmEasy│      │ • FCM notifications │    │ MPU6050 (IMU)      │
+   └──────────────────┘      │ • Firebase Auth     │    │ DS18B20 (Temp)     │
+                             └──────────┬──────────┘    └────────────────────┘
+                                        │
+              ┌─────────────────────────┼──────────────────────────┐
+              │                         │                          │
+              ▼                         ▼                          ▼
+   ┌──────────────────┐    ┌────────────────────────┐  ┌─────────────────────┐
+   │   RAG BACKEND    │    │  EMERGENCY WEB ENDPOINT │  │   WEARABLE LAYER    │
+   │   (separate)     │    │  Next.js (separate repo)│  │                     │
+   │                  │    │                        │  │ Mi Band Notify SDK  │
+   │ LLM + FAISS      │    │ Public · No login      │  │ Health Connect (RN) │
+   │ Vector store     │    │ No JS · <2s on 3G      │  │ HealthKit (iOS)     │
+   │ Medical KB       │    │ Serves QR endpoint     │  └─────────────────────┘
+   └──────────────────┘    └────────────────────────┘
+```
+
+</div>
+
+### Complete Data Flow
+
+<div align="center">
+
+```
+USER ACTION                PROCESSING                     OUTCOME
+─────────────────────────────────────────────────────────────────────────────
+Scan pill bottle      →  ML Kit OCR (on-device)       →  Name · Dose · Expiry
+                      →  RxNorm normalize              →  Canonical drug name
+                      →  OpenFDA interact check        →  🔴🟡🟢 Severity flag
+                      →  Jan Aushadhi lookup           →  Price + nearest Kendra
+                      →  NLP schedule parse            →  Daily reminder schedule
+                      →  Firebase write                →  Inventory + Health Resume
+                      →  FCM + Mi Band push            →  Wearable reminder
+
+IoT patch reads       →  Firebase RTDB write (30s)     →  Guardian dashboard live
+                      →  Cloud Function onWrite        →  Anomaly check
+                      →  Threshold breached?
+                          YES → Push alert             →  Patient + guardian notified
+                              → Med correlation        →  Adverse reaction flag
+                              → Critical?
+                                  YES → SOS mode       →  Live vitals on QR endpoint
+                                      → GPS share      →  Guardian + emergency contacts
+                                      → Doctor map     →  Teleconsult booking
+
+QR scan (bystander)   →  HTTPS request (no auth)       →  Blood type · Allergies · Meds
+                      →  Static render (no JS)         →  Emergency contacts · Live vitals*
+                      (* only in SOS mode)
+```
+
+</div>
+
+---
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
+
+## ⚙️ Tech Stack
+
+<div align="center">
+
+<img src="https://skillicons.dev/icons?i=react,ts,firebase,nodejs,figma&theme=dark"/>
+
+<br/><br/>
+
+| Category | Technology | Why |
+|---|---|---|
+| **Framework** | React Native 0.74 + Expo SDK 51 | Cross-platform, OTA updates, Expo ecosystem |
+| **Language** | TypeScript (strict) | Zero `any`, compile-time safety |
+| **Navigation** | Expo Router v3 | File-based routing, deep linking, web parity |
+| **Global State** | Zustand | Minimal, no boilerplate, async-friendly |
+| **Server State** | TanStack React Query | Caching, background refetch, optimistic updates |
+| **Styling** | NativeWind v4 | Tailwind DX on native, no StyleSheet.create |
+| **Animations** | Reanimated v3 | Worklet-based, 60fps on JS thread |
+| **OCR** | Google ML Kit Text Recognition | On-device, zero network, handles Devanagari |
+| **Drug Data** | RxNorm (NLM) + OpenFDA | Free, authoritative, pharmacopoeial standard |
+| **Prices** | Jan Aushadhi dataset + 1mg + PharmEasy | Government + private market coverage |
+| **Voice** | Expo Speech + @react-native-voice | Hindi + English STT/TTS |
+| **Wearable** | Mi Band SDK + Health Connect + HealthKit | Primary Mi Band + universal fallback |
+| **Maps** | React Native Maps + Expo Location | Doctor health map + nearest Kendra |
+| **Forms** | React Hook Form + Zod | Schema-validated, zero re-renders |
+| **Backend** | Firebase (Firestore + RTDB + Functions) | Real-time, scalable, low ops overhead |
+| **Auth** | Firebase Auth (OTP + Google) | India-first OTP flow |
+| **Notifications** | FCM + APNs | Android + iOS push |
+| **Testing** | Jest + RNTL | Unit + integration |
+| **Package Manager** | `pnpm` | Faster, disk-efficient |
+
+</div>
+
+---
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
 
@@ -425,41 +560,41 @@ CycleEntry {
 ```
 sanjivani/
 │
-├── app/                                   # Expo Router — file-based routing
-│   ├── (auth)/                            # Unauthenticated flow
+├── app/                                    # Expo Router — file-based routing
+│   ├── (auth)/                             # Unauthenticated flow
 │   │   ├── welcome.tsx
 │   │   ├── login.tsx
 │   │   └── onboarding/
-│   │       ├── personal.tsx               # Step 1: name, DOB, blood type
+│   │       ├── personal.tsx               # Step 1: name, DOB, blood type, sex
 │   │       ├── medical.tsx                # Step 2: allergies, conditions
 │   │       ├── documents.tsx              # Step 3: upload documents
 │   │       └── role.tsx                   # Step 4: patient or guardian
 │   │
 │   ├── (tabs)/                            # Main authenticated navigation
 │   │   ├── _layout.tsx
-│   │   ├── home.tsx                       # Dashboard
+│   │   ├── home.tsx                       # Dashboard — summary cards
 │   │   ├── medications.tsx                # Medication inventory
-│   │   ├── vitals.tsx                     # IoT vitals + charts
-│   │   ├── cycle.tsx                      # Cycle Intelligence dashboard
+│   │   ├── vitals.tsx                     # IoT vitals + trend charts
+│   │   ├── cycle.tsx                      # Cycle Intelligence (female only)
 │   │   ├── profile.tsx                    # Health Resume + documents
 │   │   └── assistant.tsx                  # Voice RAG assistant
 │   │
 │   ├── medication/
-│   │   ├── scan.tsx                       # Camera OCR
+│   │   ├── scan.tsx                       # Camera OCR scan
 │   │   ├── confirm.tsx                    # OCR result edit form
 │   │   ├── interactions.tsx               # Drug interaction result
 │   │   ├── price-compare.tsx              # Jan Aushadhi + market prices
 │   │   └── schedule.tsx                   # Dosage schedule builder
 │   │
 │   ├── cycle/
-│   │   ├── log.tsx                        # Log period start / symptoms
-│   │   ├── insights.tsx                   # Pattern analysis + flags
-│   │   └── history.tsx                    # Full cycle history calendar
+│   │   ├── log.tsx                        # Log period + symptoms
+│   │   ├── insights.tsx                   # Pattern flags + explanations
+│   │   └── history.tsx                    # Full cycle calendar
 │   │
 │   ├── emergency/
 │   │   ├── sos.tsx                        # 30-second SOS countdown
-│   │   ├── qr.tsx                         # Emergency QR display
-│   │   └── doctor-map.tsx                 # Doctor map + teleconsult
+│   │   ├── qr.tsx                         # Emergency QR display + token
+│   │   └── doctor-map.tsx                 # Doctor map + teleconsult booking
 │   │
 │   ├── guardian/
 │   │   ├── dashboard.tsx                  # Remote vitals view
@@ -479,33 +614,33 @@ sanjivani/
 │   │
 │   ├── medication/
 │   │   ├── MedicationCard.tsx
-│   │   ├── InteractionFlag.tsx            # Red/Amber/Green severity
+│   │   ├── InteractionFlag.tsx            # 🔴🟡🟢 severity badge
 │   │   ├── PriceCompareCard.tsx
 │   │   └── DoseScheduleRow.tsx
 │   │
 │   ├── vitals/
 │   │   ├── VitalsRing.tsx                 # Animated SpO2/HR ring
-│   │   ├── VitalsChart.tsx                # 24h/7d/30d trend
+│   │   ├── VitalsChart.tsx                # 24h/7d/30d trend graph
 │   │   └── AnomalyAlert.tsx
 │   │
 │   ├── cycle/
 │   │   ├── CycleCalendar.tsx              # Phase-colored calendar
 │   │   ├── PhaseIndicator.tsx             # Current phase banner
-│   │   ├── VitalsCycleOverlay.tsx         # Vitals overlaid on cycle chart
-│   │   └── CycleFlag.tsx                  # Irregular pattern alert card
+│   │   ├── VitalsCycleOverlay.tsx         # Vitals overlaid on cycle
+│   │   └── CycleFlag.tsx                  # Irregular pattern alert
 │   │
 │   ├── emergency/
-│   │   ├── QRWidget.tsx
-│   │   └── SOSCountdown.tsx
+│   │   ├── QRWidget.tsx                   # Lock screen QR
+│   │   └── SOSCountdown.tsx               # 30-second animated timer
 │   │
 │   └── shared/
-│       ├── ElderlyMode.tsx                # Font/target size wrapper
+│       ├── ElderlyMode.tsx                # Font/touch target wrapper
 │       └── LanguageProvider.tsx
 │
 ├── hooks/
 │   ├── useMedications.ts
 │   ├── useVitals.ts
-│   ├── useCycle.ts                        # Cycle phase + flags
+│   ├── useCycle.ts
 │   ├── useEmergency.ts
 │   ├── useHealthResume.ts
 │   ├── useInteractionCheck.ts
@@ -516,7 +651,7 @@ sanjivani/
 │   ├── authStore.ts
 │   ├── medicationStore.ts
 │   ├── vitalsStore.ts
-│   ├── cycleStore.ts                      # Cycle entries + current phase
+│   ├── cycleStore.ts
 │   └── emergencyStore.ts
 │
 ├── services/
@@ -532,9 +667,9 @@ sanjivani/
 │   │   ├── openFda.ts
 │   │   └── priceCompare.ts
 │   ├── cycle/
-│   │   ├── phaseCalculator.ts             # Current phase from cycle history
-│   │   ├── patternEngine.ts               # Anomaly detection across phases
-│   │   └── medicationCorrelator.ts        # Meds that affect cycle/BBT
+│   │   ├── phaseCalculator.ts
+│   │   ├── patternEngine.ts
+│   │   └── medicationCorrelator.ts
 │   ├── rag/
 │   │   └── assistant.ts
 │   └── wearable/
@@ -543,20 +678,20 @@ sanjivani/
 ├── types/
 │   ├── medication.ts
 │   ├── vitals.ts
-│   ├── cycle.ts                           # CycleEntry, CyclePhase, CycleFlag
+│   ├── cycle.ts
 │   ├── user.ts
 │   └── emergency.ts
 │
 ├── constants/
 │   ├── colors.ts
 │   ├── typography.ts
-│   ├── thresholds.ts                      # IoT + cycle alert thresholds
+│   ├── thresholds.ts
 │   └── languages.ts
 │
 ├── utils/
 │   ├── dosageParser.ts
 │   ├── interactionClassifier.ts
-│   ├── cyclePhaseUtils.ts                 # BBT deviation, phase boundaries
+│   ├── cyclePhaseUtils.ts
 │   ├── healthResumeBuilder.ts
 │   └── dateHelpers.ts
 │
@@ -566,6 +701,8 @@ sanjivani/
 │   └── index.ts
 │
 ├── assets/
+│   └── logo.png
+│
 ├── .env.example
 ├── app.json
 ├── babel.config.js
@@ -573,47 +710,38 @@ sanjivani/
 └── tsconfig.json
 ```
 
+---
+
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
 
 ## 🗃 Data Models
 
-> Use these types exactly. Do not rename fields, do not add undocumented fields. All types live in `/types/`.
+> Use these types exactly as defined. All types live in `/types/`. Do not rename fields.
 
 <details>
 <summary><b>UserProfile</b></summary>
 
 ```typescript
-// types/user.ts
 export interface UserProfile {
-  uid: string;
-  name: string;
-  dateOfBirth: string;                    // ISO 8601
-  bloodType: BloodType;
-  heightCm: number;
-  weightKg: number;
-  sex: 'male' | 'female' | 'other' | 'prefer_not_to_say';
-  allergies: string[];
-  chronicConditions: string[];
-  emergencyContacts: EmergencyContact[];
-  role: 'patient' | 'guardian';
-  guardianOf?: string;                    // uid of patient
-  elderlyMode: boolean;
-  preferredLanguage: 'en' | 'hi' | 'mr' | 'bn' | 'ta';
-  qrToken: string;                        // UUID v4
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-}
-
-export type BloodType =
-  | 'A+' | 'A-' | 'B+' | 'B-'
-  | 'AB+' | 'AB-' | 'O+' | 'O-'
-  | 'Unknown';
-
-export interface EmergencyContact {
-  name: string;
-  relation: string;
-  phone: string;
-  isPrimary: boolean;
+  uid: string
+  name: string
+  dateOfBirth: string                         // ISO 8601
+  bloodType: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-' | 'Unknown'
+  heightCm: number
+  weightKg: number
+  sex: 'male' | 'female' | 'other' | 'prefer_not_to_say'
+  allergies: string[]
+  chronicConditions: string[]
+  emergencyContacts: Array<{
+    name: string; relation: string; phone: string; isPrimary: boolean
+  }>
+  role: 'patient' | 'guardian'
+  guardianOf?: string                         // uid of patient
+  elderlyMode: boolean
+  preferredLanguage: 'en' | 'hi' | 'mr' | 'bn' | 'ta'
+  qrToken: string                             // UUID v4
+  createdAt: Timestamp
+  updatedAt: Timestamp
 }
 ```
 </details>
@@ -622,97 +750,71 @@ export interface EmergencyContact {
 <summary><b>Medication</b></summary>
 
 ```typescript
-// types/medication.ts
 export interface Medication {
-  id: string;
-  uid: string;
-  brandName: string;                      // OCR extracted
-  genericName: string;                    // RxNorm normalized
-  rxcui: string;
-  dosage: string;                         // e.g., "500mg"
-  quantity: number;
-  expiryDate: string;                     // ISO 8601 date
-  schedule: DoseSchedule[];
-  status: 'active' | 'archived' | 'expired';
-  addedAt: Timestamp;
-  interactionLog: InteractionCheckResult[];
-  janAushadhiEquivalent?: JanAushadhiProduct;
-  affectsCycle?: boolean;                 // flagged by medicationCorrelator
-  cycleBBTEffect?: 'raises' | 'lowers' | 'unpredictable' | null;
-}
-
-export interface DoseSchedule {
-  time: string;                           // "HH:MM" 24-hour
-  quantity: number;
-  unit: string;                           // "tablet" | "ml" | "drop"
-  withFood: boolean;
-  notes?: string;
-}
-
-export interface InteractionCheckResult {
-  checkedAt: Timestamp;
-  interactingDrugId: string;
-  interactingDrugName: string;
-  severity: 'contraindicated' | 'major' | 'minor' | 'none';
-  description: string;
-  source: 'openfda' | 'rxnorm';
-}
-
-export interface JanAushadhiProduct {
-  productId: string;
-  productName: string;
-  mrp: number;                            // INR
-  marketPrice: number;
-  savingsPercent: number;
-  nearestKendra?: {
-    name: string;
-    address: string;
-    distanceKm: number;
-    coordinates: GeoPoint;
-  };
+  id: string
+  uid: string
+  brandName: string                           // OCR extracted
+  genericName: string                         // RxNorm normalized
+  rxcui: string
+  dosage: string
+  quantity: number
+  expiryDate: string                          // ISO 8601
+  schedule: Array<{
+    time: string                              // "HH:MM" 24-hour
+    quantity: number
+    unit: string                              // "tablet" | "ml" | "drop"
+    withFood: boolean
+    notes?: string
+  }>
+  status: 'active' | 'archived' | 'expired'
+  addedAt: Timestamp
+  interactionLog: Array<{
+    checkedAt: Timestamp
+    interactingDrugId: string
+    interactingDrugName: string
+    severity: 'contraindicated' | 'major' | 'minor' | 'none'
+    description: string
+    source: 'openfda' | 'rxnorm'
+  }>
+  janAushadhiEquivalent?: {
+    productId: string; productName: string; mrp: number
+    marketPrice: number; savingsPercent: number
+    nearestKendra?: { name: string; address: string; distanceKm: number }
+  }
+  affectsCycle?: boolean
+  cycleBBTEffect?: 'raises' | 'lowers' | 'unpredictable' | null
 }
 ```
 </details>
 
 <details>
-<summary><b>Vitals</b></summary>
+<summary><b>VitalsReading + AnomalyEvent</b></summary>
 
 ```typescript
-// types/vitals.ts
 export interface VitalsReading {
-  id: string;
-  uid: string;
-  timestamp: Timestamp;
-  spo2: number;                           // 0–100%
-  heartRate: number;                      // BPM
-  temperature: number;                    // Celsius
-  source: 'iot_patch' | 'manual';
+  id: string; uid: string; timestamp: Timestamp
+  spo2: number        // 0–100%
+  heartRate: number   // BPM
+  temperature: number // Celsius
+  source: 'iot_patch' | 'manual'
 }
 
 export interface AnomalyEvent {
-  id: string;
-  uid: string;
-  timestamp: Timestamp;
-  type: 'spo2_low' | 'hr_high' | 'hr_low' | 'temp_high' | 'fall' | 'crash';
-  vitalsAtEvent: VitalsReading;
+  id: string; uid: string; timestamp: Timestamp
+  type: 'spo2_low' | 'hr_high' | 'hr_low' | 'temp_high' | 'fall' | 'crash'
+  vitalsAtEvent: VitalsReading
   medicationCorrelation?: {
-    medicationId: string;
-    medicationName: string;
-    addedHoursAgo: number;
-    flag: string;
-  };
-  cyclePhaseAtEvent?: CyclePhase;         // cross-reference with cycle
-  resolved: boolean;
-  resolvedAt?: Timestamp;
+    medicationId: string; medicationName: string
+    addedHoursAgo: number; flag: string
+  }
+  cyclePhaseAtEvent?: CyclePhase
+  resolved: boolean; resolvedAt?: Timestamp
 }
 
-// Alert thresholds (constants/thresholds.ts)
+// Thresholds (constants/thresholds.ts)
 export const VITALS_THRESHOLDS = {
-  spo2Low:   90,    // %
-  hrLow:     45,    // BPM
-  hrHigh:   150,    // BPM
-  tempHigh:  38.5,  // °C
-} as const;
+  spo2Low: 90, hrLow: 45, hrHigh: 150, tempHigh: 38.5
+} as const
 ```
 </details>
 
@@ -720,63 +822,28 @@ export const VITALS_THRESHOLDS = {
 <summary><b>Cycle Intelligence</b></summary>
 
 ```typescript
-// types/cycle.ts
-export type CyclePhase =
-  | 'menstruation'
-  | 'follicular'
-  | 'ovulation'
-  | 'luteal';
+export type CyclePhase = 'menstruation' | 'follicular' | 'ovulation' | 'luteal'
 
 export type CycleFlagType =
-  | 'irregular_cycle_length'
-  | 'unexpected_bbt_spike'
-  | 'unexpected_bbt_drop'
-  | 'elevated_hr_across_phases'
-  | 'low_spo2_pattern'
-  | 'possible_pcos_signal'
-  | 'possible_hormonal_imbalance'
-  | 'medication_affecting_cycle';
+  | 'irregular_cycle_length'   | 'unexpected_bbt_spike'
+  | 'unexpected_bbt_drop'      | 'elevated_hr_across_phases'
+  | 'low_spo2_pattern'         | 'possible_pcos_signal'
+  | 'possible_hormonal_imbalance' | 'medication_affecting_cycle'
 
 export interface CycleEntry {
-  id: string;
-  uid: string;
-  date: string;                           // ISO 8601
-  phase: CyclePhase;
-  dayOfCycle: number;
+  id: string; uid: string; date: string; phase: CyclePhase; dayOfCycle: number
   userLogged: {
-    flow?: 'none' | 'spotting' | 'light' | 'medium' | 'heavy';
-    symptoms?: string[];                  // e.g. ["cramps", "bloating"]
-    mood?: string;
-    notes?: string;
-  };
+    flow?: 'none' | 'spotting' | 'light' | 'medium' | 'heavy'
+    symptoms?: string[]; mood?: string; notes?: string
+  }
   vitalsCorrelated: {
-    bbt: number;                          // basal body temperature (°C)
-    hrAvg: number;
-    spo2Avg: number;
-    source: 'iot_patch' | 'manual' | 'estimated';
-  };
-  flags: CycleFlag[];
-}
-
-export interface CycleFlag {
-  type: CycleFlagType;
-  severity: 'info' | 'watch' | 'consult';
-  description: string;
-  relatedMedication?: string;
-  detectedAt: Timestamp;
-}
-
-export interface CycleSummary {
-  uid: string;
-  averageCycleLength: number;             // days
-  averagePeriodLength: number;            // days
-  lastPeriodStart: string;
-  predictedNextPeriod: string;
-  predictedOvulation: string;
-  bbtBaselineFollicular: number;          // average BBT in follicular phase
-  bbtBaselineLuteal: number;              // average BBT in luteal phase
-  activeFlags: CycleFlag[];
-  lastUpdated: Timestamp;
+    bbt: number; hrAvg: number; spo2Avg: number
+    source: 'iot_patch' | 'manual' | 'estimated'
+  }
+  flags: Array<{
+    type: CycleFlagType; severity: 'info' | 'watch' | 'consult'
+    description: string; relatedMedication?: string; detectedAt: Timestamp
+  }>
 }
 ```
 </details>
@@ -785,37 +852,26 @@ export interface CycleSummary {
 <summary><b>Emergency</b></summary>
 
 ```typescript
-// types/emergency.ts
 export interface EmergencySummary {
-  // Public QR endpoint payload — read by anyone who scans
-  name: string;
-  bloodType: BloodType;
-  allergies: string[];
-  activeMedications: Array<{
-    genericName: string;
-    dosage: string;
-  }>;
-  chronicConditions: string[];
-  emergencyContacts: EmergencyContact[];
-  liveVitals?: VitalsReading;            // populated during SOS mode only
-  lastUpdated: string;
+  // Public QR endpoint — readable by anyone who scans
+  name: string; bloodType: string; allergies: string[]
+  activeMedications: Array<{ genericName: string; dosage: string }>
+  chronicConditions: string[]
+  emergencyContacts: Array<{ name: string; relation: string; phone: string }>
+  liveVitals?: VitalsReading    // SOS mode only
+  lastUpdated: string
 }
 
 export interface SOSEvent {
-  id: string;
-  uid: string;
-  triggeredAt: Timestamp;
-  triggerType: 'manual' | 'fall' | 'crash' | 'vitals_critical';
-  location?: {
-    latitude: number;
-    longitude: number;
-    accuracy: number;
-  };
-  cancelledAt?: Timestamp;
-  cancelled: boolean;
+  id: string; uid: string; triggeredAt: Timestamp
+  triggerType: 'manual' | 'fall' | 'crash' | 'vitals_critical'
+  location?: { latitude: number; longitude: number; accuracy: number }
+  cancelledAt?: Timestamp; cancelled: boolean
 }
 ```
 </details>
+
+---
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
 
@@ -824,174 +880,81 @@ export interface SOSEvent {
 ### Firestore Collections
 
 ```
-users/{uid}
-  └── UserProfile
-
-users/{uid}/medications/{medicationId}
-  └── Medication
-
-users/{uid}/documents/{documentId}
-  └── { name, url, uploadedAt, parsedFields }
-
-users/{uid}/anomaly_log/{anomalyId}
-  └── AnomalyEvent
-
-users/{uid}/sos_events/{sosId}
-  └── SOSEvent
-
-users/{uid}/teleconsultations/{consultId}
-  └── { doctorName, bookedAt, report, notes, prescriptions }
-
-users/{uid}/cycle/{entryId}
-  └── CycleEntry
-
-users/{uid}/cycle_summary
-  └── CycleSummary (single document, overwritten)
-
-emergency/{qrToken}
-  └── EmergencySummary
-      Security: allow read if true; allow write if request.auth != null
+users/{uid}                                  UserProfile
+users/{uid}/medications/{id}                 Medication
+users/{uid}/documents/{id}                   { name, url, uploadedAt, parsedFields }
+users/{uid}/anomaly_log/{id}                 AnomalyEvent
+users/{uid}/sos_events/{id}                  SOSEvent
+users/{uid}/teleconsultations/{id}           { doctorName, bookedAt, report, notes }
+users/{uid}/cycle/{id}                       CycleEntry
+users/{uid}/cycle_summary                    CycleSummary (single doc, overwritten)
+emergency/{qrToken}                          EmergencySummary
+  └── Security: read=public · write=auth only
 ```
 
-### Realtime Database
+### Realtime Database (IoT vitals stream)
 
 ```
-/vitals/{uid}/current
-  └── Latest VitalsReading (overwritten every 30s by IoT patch)
-
-/vitals/{uid}/stream/{timestamp}
-  └── Individual readings during SOS mode only
+/vitals/{uid}/current          Latest reading (overwritten every 30s by IoT patch)
+/vitals/{uid}/stream/{ts}      Individual readings during SOS mode only
 ```
 
-### Security Rules Philosophy
+### Security Rules
 
 | Path | Read | Write |
 |---|---|---|
-| `users/{uid}/**` | `uid == auth.uid` OR guardian | `uid == auth.uid` |
-| `emergency/{token}` | Public (anyone) | Authenticated user |
-| `/vitals/{uid}/**` | `uid == auth.uid` OR guardian | IoT patch service account |
+| `users/{uid}/**` | uid == auth OR guardian | uid == auth |
+| `emergency/{token}` | **Public** | Authenticated |
+| `/vitals/{uid}/**` | uid == auth OR guardian | IoT service account |
 
-### Firebase Initialization
-
-```typescript
-// services/firebase/config.ts
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getDatabase } from 'firebase/database';
-import { getAuth } from 'firebase/auth';
-
-export const app = initializeApp({
-  apiKey:            process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
-  authDomain:        process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId:         process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket:     process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId:             process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
-  databaseURL:       process.env.EXPO_PUBLIC_FIREBASE_RTDB_URL,
-});
-
-export const db   = getFirestore(app);
-export const rtdb = getDatabase(app);
-export const auth = getAuth(app);
-```
+---
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
 
 ## 🗺 Screen Map
 
-### Navigation Tree
-
 ```
 Root _layout.tsx
 │
-├── (auth) ── not authenticated
+├── (auth) — not authenticated
 │   ├── /welcome
 │   ├── /login
-│   └── /onboarding/ (linear stack)
-│       ├── personal
-│       ├── medical
-│       ├── documents
-│       └── role
+│   └── /onboarding/ (linear — no skipping)
+│       ├── personal → medical → documents → role
 │
-└── (tabs) ── authenticated
-    ├── Tab: /home            (Dashboard)
-    ├── Tab: /medications     (Inventory)
-    ├── Tab: /vitals          (IoT Display)
-    ├── Tab: /cycle           (Cycle Intelligence)  ← shown only if sex ≠ male
-    ├── Tab: /profile         (Health Resume)
-    └── Tab: /assistant       (Voice RAG)
-
-    Modals (presented over tabs):
-    ├── /medication/scan
-    ├── /medication/confirm
-    ├── /medication/interactions
-    ├── /medication/price-compare
-    ├── /medication/schedule
-    ├── /cycle/log
-    ├── /cycle/insights
-    ├── /cycle/history
-    ├── /emergency/sos          ← programmatic only, never direct nav
-    ├── /emergency/qr
-    ├── /emergency/doctor-map
-    ├── /guardian/dashboard
-    └── /guardian/alerts
+└── (tabs) — authenticated
+    ├── Tab: home          Dashboard (default for patient)
+    ├── Tab: medications   Inventory
+    ├── Tab: vitals        IoT display (default for guardian)
+    ├── Tab: cycle         Cycle Intel (hidden if sex = 'male')
+    ├── Tab: profile       Health Resume
+    └── Tab: assistant     Voice RAG
+    │
+    └── Modals (programmatic only for SOS):
+        ├── /medication/scan · confirm · interactions · price-compare · schedule
+        ├── /cycle/log · insights · history
+        ├── /emergency/sos      ← PROGRAMMATIC ONLY — never direct router.push
+        ├── /emergency/qr · doctor-map
+        └── /guardian/dashboard · alerts
 ```
 
-### Screen Inventory
-
-| Screen | Route | Role | Notes |
-|---|---|---|---|
-| Welcome | `/welcome` | All | Splash + CTA |
-| Login | `/login` | All | OTP + Google Sign-In |
-| Onboarding: Personal | `/onboarding/personal` | New user | Blood type, DOB, sex |
-| Onboarding: Medical | `/onboarding/medical` | New user | Allergies, conditions |
-| Onboarding: Documents | `/onboarding/documents` | New user | First doc upload |
-| Onboarding: Role | `/onboarding/role` | New user | Patient or Guardian |
-| Home Dashboard | `/(tabs)/home` | Both | Summary cards, quick actions |
-| Medications | `/(tabs)/medications` | Patient | Inventory + expiry status |
-| Vitals | `/(tabs)/vitals` | Both | Live IoT display + trends |
-| Cycle | `/(tabs)/cycle` | Patient (female) | Phase display + flag cards |
-| Profile | `/(tabs)/profile` | Patient | Health Resume + docs |
-| Assistant | `/(tabs)/assistant` | Both | Voice RAG chat |
-| Scan | `/medication/scan` | Patient | Camera OCR scan |
-| Confirm | `/medication/confirm` | Patient | Edit OCR fields |
-| Interactions | `/medication/interactions` | Patient | Severity result |
-| Price Compare | `/medication/price-compare` | Patient | Jan Aushadhi + market |
-| Schedule | `/medication/schedule` | Patient | NLP dosage builder |
-| Cycle Log | `/cycle/log` | Patient | Period start + symptoms |
-| Cycle Insights | `/cycle/insights` | Patient | Pattern flags + explanation |
-| Cycle History | `/cycle/history` | Patient | Full calendar view |
-| SOS | `/emergency/sos` | Patient | 30s countdown |
-| QR Display | `/emergency/qr` | Patient | QR + token management |
-| Doctor Map | `/emergency/doctor-map` | Guardian | Map + booking |
-| Guardian Dashboard | `/guardian/dashboard` | Guardian | Remote vitals |
-| Alert History | `/guardian/alerts` | Guardian | Past anomaly events |
-
-### Navigation Rules
-
-- Onboarding is **strictly linear** — no skipping steps
-- Guardian users default to `vitals` tab, not `home`
-- Cycle tab only renders when `user.sex` is not `'male'`
-- `/emergency/sos` can **only** be triggered programmatically — never by direct router push from a non-emergency context
-- Cycle features (log, insights, history) are available to guardians as read-only
+---
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
 
-## 🔌 API Integrations
+## 🔌 API Reference
 
 <details>
 <summary><b>RxNorm — Drug Normalization</b></summary>
 
 ```
-Base URL: https://rxnav.nlm.nih.gov/REST
-Auth:     None required
+Base:  https://rxnav.nlm.nih.gov/REST
+Auth:  None
 
-Normalize brand → generic:
-  GET /drugs.json?name={drugName}
-  Response path: .drugGroup.conceptGroup[].conceptProperties[].rxcui + .name
+Normalize:   GET /drugs.json?name={drugName}
+             → .drugGroup.conceptGroup[].conceptProperties[].rxcui + .name
 
-Get drug properties:
-  GET /rxcui/{rxcui}/allProperties.json?prop=names
+Properties:  GET /rxcui/{rxcui}/allProperties.json?prop=names
 ```
 </details>
 
@@ -999,166 +962,41 @@ Get drug properties:
 <summary><b>OpenFDA — Drug Interactions</b></summary>
 
 ```
-Base URL: https://api.fda.gov/drug
-Auth:     None for basic queries
+Base:  https://api.fda.gov/drug
+Auth:  None (basic queries)
 
-Interaction lookup:
-  GET /label.json?search=drug_interactions:{genericName}&limit=5
-  Parse: .results[].drug_interactions[]
+Check: GET /label.json?search=drug_interactions:{genericName}&limit=5
+       → .results[].drug_interactions[]
 
-Severity classification: services/drugs/openFda.ts → interactionClassifier.ts
+Severity classified in: services/drugs/openFda.ts → utils/interactionClassifier.ts
 Output: 'contraindicated' | 'major' | 'minor' | 'none'
 ```
 </details>
 
 <details>
-<summary><b>Jan Aushadhi — Price Compare</b></summary>
-
-```
-Source:   Static JSON — EXPO_PUBLIC_JAN_AUSHADHI_DATASET_URL
-Schema:   Array<{ productId, productName, genericName, mrp, category }>
-Matching: case-insensitive, partial match on genericName
-Also:     1mg + PharmEasy partner APIs (keys in .env)
-Service:  services/drugs/priceCompare.ts
-```
-</details>
-
-<details>
-<summary><b>RAG Assistant Backend</b></summary>
+<summary><b>RAG Assistant</b></summary>
 
 ```
 POST {EXPO_PUBLIC_RAG_API_URL}/query
 Authorization: Bearer {EXPO_PUBLIC_RAG_API_KEY}
+Content-Type: application/json
 
-Body:
 {
-  query:    string,
-  language: 'en' | 'hi' | 'mr' | 'bn' | 'ta',
-  context: {
-    medications:  string[],    // active genericNames
-    allergies:    string[],
-    conditions:   string[],
-    cyclePhase?:  CyclePhase   // included if available
+  "query": "string",
+  "language": "en | hi | mr | bn | ta",
+  "context": {
+    "medications": ["string"],
+    "allergies": ["string"],
+    "conditions": ["string"],
+    "cyclePhase": "CyclePhase | undefined"
   }
 }
 
-Response:
-{
-  answer:      string,
-  disclaimer:  string,
-  sources:     string[]
-}
+→ { "answer": "string", "disclaimer": "string", "sources": ["string"] }
 ```
 </details>
 
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
-
-## 🏪 State Management
-
-```typescript
-// stores/authStore.ts
-interface AuthStore {
-  user: UserProfile | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  setUser: (user: UserProfile | null) => void;
-  logout: () => Promise<void>;
-}
-
-// stores/medicationStore.ts
-interface MedicationStore {
-  medications: Medication[];
-  isLoading: boolean;
-  pendingScan: Partial<Medication> | null;
-  setPendingScan: (scan: Partial<Medication> | null) => void;
-  addMedication: (med: Medication) => void;
-  archiveMedication: (id: string) => void;
-  refreshMedications: () => Promise<void>;
-}
-
-// stores/vitalsStore.ts
-interface VitalsStore {
-  current: VitalsReading | null;
-  anomalies: AnomalyEvent[];
-  sosActive: boolean;
-  activateSOS: (trigger: SOSEvent['triggerType']) => void;
-  cancelSOS: () => void;
-  setCurrentVitals: (v: VitalsReading) => void;
-}
-
-// stores/cycleStore.ts
-interface CycleStore {
-  entries: CycleEntry[];
-  summary: CycleSummary | null;
-  currentPhase: CyclePhase | null;
-  activeFlags: CycleFlag[];
-  logEntry: (entry: Omit<CycleEntry, 'id' | 'uid'>) => Promise<void>;
-  refreshSummary: () => Promise<void>;
-}
-
-// stores/emergencyStore.ts
-interface EmergencyStore {
-  qrToken: string | null;
-  sosActive: boolean;
-  lastSOSEvent: SOSEvent | null;
-  regenerateToken: () => Promise<void>;
-}
-```
-
-> **Rule:** Use Zustand for global UI state. Use React Query for all API calls. Use Firebase `onSnapshot` inside custom hooks for real-time Firestore/RTDB — never call them directly in components.
-
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
-
-## 🎨 Design System
-
-### Colors
-
-```typescript
-// constants/colors.ts
-export const colors = {
-  teal:   { 50:'#F0FAF6', 100:'#E1F5EE', 500:'#1D9E75', 700:'#0A6E57', 900:'#064D3D' },
-  purple: { 50:'#F7F6FF', 100:'#EDEAFF', 500:'#4C3FA0', 700:'#3A2F7A' },
-  amber:  { 50:'#FFFBF5', 100:'#FFF3E0', 500:'#B06A10', 700:'#8A5009' },
-  coral:  { 50:'#FFF7F6', 100:'#FDECEA', 500:'#8C2E1A', 700:'#6B2213' },
-  // Cycle phase colors
-  cycle: {
-    menstruation: '#E53E3E',              // red
-    follicular:   '#38A169',              // green
-    ovulation:    '#D69E2E',              // gold
-    luteal:       '#805AD5',              // purple
-  },
-  // Severity
-  danger:  '#DC2626',
-  warning: '#D97706',
-  success: '#16A34A',
-  // Neutrals
-  gray: { 50:'#F4F3EF', 200:'#E5E4DF', 500:'#888780', 700:'#3C3C3A', 900:'#1A1A18' },
-  white: '#FFFFFF',
-} as const;
-```
-
-### Typography Scale
-
-```typescript
-// constants/typography.ts
-// Standard mode
-h1:      { fontSize: 28, fontWeight: '700', lineHeight: 36 }
-h2:      { fontSize: 22, fontWeight: '700', lineHeight: 30 }
-h3:      { fontSize: 18, fontWeight: '600', lineHeight: 26 }
-body:    { fontSize: 15, fontWeight: '400', lineHeight: 22 }
-caption: { fontSize: 12, fontWeight: '400', lineHeight: 18 }
-
-// Elderly mode (+4px all sizes, +1.2x line height, 56pt min touch targets)
-```
-
-### Spacing & Shape
-
-```
-Base unit: 4px
-Scale:     4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48 · 64
-Radius:    sm=6 · md=10 · lg=16 · full=9999
-Touch:     Standard=44pt min · Elderly=56pt min
-```
+---
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
 
@@ -1166,24 +1004,22 @@ Touch:     Standard=44pt min · Elderly=56pt min
 
 ```bash
 # Clone
-git clone https://github.com/your-org/sanjivani-app
+git clone https://github.com/hexa-binary/sanjivani-app
 cd sanjivani-app
 
-# Install (pnpm only)
+# Install — pnpm only
 pnpm install
 
 # Environment
 cp .env.example .env.local
-# → fill in all EXPO_PUBLIC_ values
+# Fill in all EXPO_PUBLIC_ values
 
 # Start
 pnpm expo start
 
-# iOS
-pnpm expo run:ios
-
-# Android
+# Platform specific
 pnpm expo run:android
+pnpm expo run:ios
 ```
 
 ### `.env.example`
@@ -1199,36 +1035,74 @@ EXPO_PUBLIC_FIREBASE_RTDB_URL=
 
 EXPO_PUBLIC_RXNORM_BASE_URL=https://rxnav.nlm.nih.gov/REST
 EXPO_PUBLIC_OPENFDA_BASE_URL=https://api.fda.gov/drug
-
 EXPO_PUBLIC_PHARMAEASY_API_KEY=
 EXPO_PUBLIC_ONEMG_API_KEY=
 EXPO_PUBLIC_JAN_AUSHADHI_DATASET_URL=
 
 EXPO_PUBLIC_RAG_API_URL=
 EXPO_PUBLIC_RAG_API_KEY=
-
 EXPO_PUBLIC_GOOGLE_MAPS_API_KEY=
 ```
 
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
-
-
+---
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
 
+## 📐 Conventions
+
+| Rule | Detail |
+|---|---|
+| TypeScript | Strict — zero `any` · zero `@ts-ignore` |
+| Components | Functional only · One per file · Props exported |
+| Styling | NativeWind only — no `StyleSheet.create` |
+| Data fetching | React Query for APIs · Firebase `onSnapshot` in hooks only |
+| Firebase | All calls through `/services/firebase/` — never import SDK in components |
+| OCR | On-device only — never send pill images to a server |
+| Vitals | Read-only — IoT patch writes, this app reads |
+| i18n | No hardcoded strings — all in `en.json` + `hi.json` |
+| Errors | All errors → Toast — no silent failures — always show retry |
+| Accessibility | `accessibilityLabel` + `accessibilityRole` on every touchable |
+| Elderly Mode | Every component must support `elderlyMode` prop |
+| SOS screen | Most tested, most accessible screen in the app |
+| Naming | Components=PascalCase · Screens=kebab-case · Hooks/Services=camelCase |
+| Packages | Do not add dependencies not in the stack without flagging |
+
+---
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
+
+## 🚫 Out of Scope (this repo)
+
+| Item | Where |
+|---|---|
+| Emergency QR public web page | Separate Next.js repo |
+| Firebase Cloud Functions | Separate functions repo |
+| ESP32 IoT firmware | Separate C/Arduino repo |
+| Doctor-facing portal | Future web app |
+| In-app video call | Third-party SDK — not scoped |
+| ABHA health ID integration | v2.0 |
+| Admin dashboard | Not planned |
+
+---
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
 
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0A6E57,100:5DCAA5&height=100&section=footer&text=संजीवनी&fontSize=24&fontColor=ffffff&animation=fadeIn&fontAlignY=65"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:064D3D,50:0A6E57,100:1D9E75&height=120&section=footer&text=Team%20Hexa%20Binary%20·%20Kriyeta%205.0&fontSize=20&fontColor=c8f0e0&animation=fadeIn&fontAlignY=65"/>
 
 <br/>
 
-*Built with purpose. For the 230 million who deserve better.*
+*Built for the 230 million who deserve a system that actually connects the dots.*
 
 <br/>
 
-**Sanjivani** · Personal Health OS · v2.0 · April 2026
+<img src="https://img.shields.io/badge/Made%20with-❤️%20in%20India-1D9E75?style=for-the-badge"/>
+&nbsp;
+<img src="https://img.shields.io/badge/Kriyeta_5.0-Hexa_Binary-0A6E57?style=for-the-badge"/>
+
+<br/><br/>
+
+**संजीवनी · Sanjivani** &nbsp;·&nbsp; Personal Health OS &nbsp;·&nbsp; v2.0 &nbsp;·&nbsp; April 2026
 
 </div>
