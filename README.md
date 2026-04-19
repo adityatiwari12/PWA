@@ -54,8 +54,6 @@ India has **230 million people over 50** managing chronic conditions. The majori
 
 Sanjivani is that system.
 
-> **For AI code agents:** This README is your single source of truth. Read it entirely before writing a single line. Every architectural decision, naming convention, data model, and feature scope is defined here. Do not invent structure that isn't specified — ask instead.
-
 </td>
 <td width="40%" align="center">
 
@@ -1214,58 +1212,10 @@ EXPO_PUBLIC_GOOGLE_MAPS_API_KEY=
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
 
-## 📐 Coding Conventions
 
-| Rule | Detail |
-|---|---|
-| **TypeScript** | Strict mode — zero `any`, zero `@ts-ignore` |
-| **Components** | Functional only · One per file · Props interface exported |
-| **Styling** | NativeWind only — no `StyleSheet.create`, no inline styles |
-| **Data fetching** | React Query for APIs · Firebase `onSnapshot` in hooks |
-| **Firebase** | All Firebase calls through `/services/firebase/` only |
-| **OCR** | On-device only — never send pill images to a server |
-| **Vitals** | Read-only in this app — IoT patch writes, app reads |
-| **i18n** | No hardcoded user-facing strings — all in `i18n/en.json` + `i18n/hi.json` |
-| **Errors** | All API errors surfaced via Toast — no silent failures — always show retry |
-| **Accessibility** | All touchables: `accessibilityLabel` + `accessibilityRole` |
-| **Elderly Mode** | Every component must support `elderlyMode` prop |
-| **Naming** | Components=PascalCase · Screens=kebab-case · Hooks/Services=camelCase |
-| **Dependencies** | Do not add packages not listed in the stack without flagging |
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
 
-## 🚫 Out of Scope
-
-> Do not build, scaffold, or reference any of the following in this repo.
-
-| Item | Where it lives |
-|---|---|
-| Emergency QR public web page | Separate Next.js repo |
-| Firebase Cloud Functions (anomaly detector, Health Resume generator, cycle pattern engine) | Separate functions repo |
-| ESP32 IoT firmware | Separate C/Arduino repo |
-| Doctor-facing portal | Future separate web app |
-| In-app video call (teleconsult) | Third-party SDK — not yet scoped |
-| Payment processing | Not yet scoped |
-| ABHA health ID integration | v2.0 |
-| Admin dashboard | Not planned |
-
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
-
-## 📋 Agent Checklist
-
-Before writing any code, confirm:
-
-- [ ] I have read this README in full
-- [ ] The file I'm creating exists in the directory structure above
-- [ ] I am using the exact type field names from Section: Data Models
-- [ ] All Firebase calls go through `/services/firebase/` — not imported directly
-- [ ] All API calls use React Query
-- [ ] OCR runs on-device — no image is uploaded to any server
-- [ ] Vitals data is read-only in this app
-- [ ] The SOS screen has `accessibilityLabel` on every interactive element
-- [ ] New strings have entries in both `i18n/en.json` and `i18n/hi.json`
-- [ ] Elderly mode is supported in the component I'm building
-- [ ] I have not added a dependency not listed in the Tech Stack section
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
 
