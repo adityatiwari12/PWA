@@ -26,10 +26,13 @@ import { useCycleState } from '../../hooks/useCycleState';
 import { generateCycleInsights } from '../../lib/gemini';
 import type { UserProfile } from '../../types/user';
 import { triggerEmergencyWebhook } from '../../lib/emergency';
+import { generateHealthResumePdf } from '../../lib/pdfGenerator';
+import { useVitalsStore } from '../../store/vitalsStore';
 
 export default function ProfileScreen() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<UserProfile | null>(null);
   const { medications, fetchMedications } = useMedicationStore();
@@ -78,6 +81,19 @@ export default function ProfileScreen() {
     if (confirm) {
       await dbOperations.deleteUserProfile(profile.uid);
       window.location.href = '/';
+    }
+  };
+
+  const handleDownloadResume = async () => {
+    if (!profile) return;
+    setIsGeneratingPdf(true);
+    try {
+      const vitals = useVitalsStore.getState().vitals;
+      await generateHealthResumePdf(profile, medications, vitals, aiInsight);
+    } catch (err) {
+      console.error('Failed to generate PDF resume', err);
+    } finally {
+      setIsGeneratingPdf(false);
     }
   };
 
@@ -275,9 +291,13 @@ export default function ProfileScreen() {
                   <p className="text-[12px] text-gray-400 mt-0.5">PDF • 500KB</p>
                 </div>
               </div>
-              <a href="/health_resume.pdf" download="Sanjivani_Health_Resume.pdf" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full flex items-center justify-center text-teal-600 bg-teal-50 active:scale-90 transition-transform">
-                <Download size={17} />
-              </a>
+              <button
+                onClick={handleDownloadResume}
+                disabled={isGeneratingPdf}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-teal-600 bg-teal-50 active:scale-90 transition-transform disabled:opacity-50"
+              >
+                {isGeneratingPdf ? <div className="animate-spin h-4 w-4 border-2 border-teal-600 border-t-transparent rounded-full" /> : <Download size={17} />}
+              </button>
             </div>
 
             {/* ─── ALLERGIES + CHRONIC (side by side) ─── */}
