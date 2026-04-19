@@ -43,6 +43,60 @@ const DRUG_DICTIONARY = [
   "Metoprolol", "Amlokind", "Telma", "Stamlo",
 ];
 
+// ---------------------------------------------------------------------------
+// Supplement / OTC product fingerprint database
+// Matches known products from OCR keyword sets when AI fails
+// ---------------------------------------------------------------------------
+interface SupplementEntry {
+  drug: string;
+  dosage: string | null;
+  manufacturer: string | null;
+  keywords: string[]; // ALL must appear in rawText (case-insensitive)
+}
+
+const SUPPLEMENT_DB: SupplementEntry[] = [
+  {
+    drug: "Multivitamin with Zinc & Vitamin C",
+    dosage: "1 tablet/day",
+    manufacturer: "HK Vitals (Research Driven Innovations)",
+    keywords: ["multivitamin", "zinc", "vitamin c", "research driven"],
+  },
+  {
+    drug: "Revital H Multivitamin",
+    dosage: "1 capsule/day",
+    manufacturer: "Sanofi",
+    keywords: ["revital", "ginseng"],
+  },
+  {
+    drug: "Limcee Vitamin C",
+    dosage: "500 mg",
+    manufacturer: "Abbott",
+    keywords: ["limcee", "chewable", "vitamin c"],
+  },
+  {
+    drug: "Becosules Multivitamin",
+    dosage: "1 capsule/day",
+    manufacturer: "Pfizer",
+    keywords: ["becosules", "vitamin b"],
+  },
+  {
+    drug: "Shelcal Calcium + Vitamin D3",
+    dosage: "500 mg / 250 IU",
+    manufacturer: "Elder Pharma",
+    keywords: ["shelcal", "calcium", "vitamin d3"],
+  },
+];
+
+function matchSupplement(rawText: string): SupplementEntry | null {
+  const lower = rawText.toLowerCase();
+  for (const entry of SUPPLEMENT_DB) {
+    if (entry.keywords.every(kw => lower.includes(kw))) {
+      return entry;
+    }
+  }
+  return null;
+}
+
 function parseDataUrl(dataUrl: string): { mime: string; base64: string } {
   const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/s);
   if (match) {
@@ -155,6 +209,23 @@ export async function extractMedicalEntitiesVision(
         rxcui: rxResult?.rxcui || '',
         sourceTier: 'Tier 1: Groq Cloud Vision'
       };
+    }
+    // Groq returned Unknown — try supplement fingerprint on raw OCR text
+    if (result?.rawText) {
+      const match = matchSupplement(result.rawText);
+      if (match) {
+        console.log('[Scanner] ✅ Supplement DB match:', match.drug);
+        return {
+          drug: match.drug,
+          genericName: match.drug,
+          rxcui: '',
+          dosage: match.dosage,
+          expiry: null,
+          manufacturer: match.manufacturer,
+          rawText: result.rawText,
+          sourceTier: 'Tier 1.5: Supplement Database'
+        };
+      }
     }
   } catch (err) {
     console.error('[Scanner] Groq Tier failed:', err);
