@@ -1,5 +1,5 @@
 <div align="center">
-<img src="sanjivani_logo.png" width="180" alt="Sanjivani Logo"/>
+<img src="sanjivani_logo.svg" width="180" alt="Sanjivani Logo"/>
 
 <br/><br/>
 
