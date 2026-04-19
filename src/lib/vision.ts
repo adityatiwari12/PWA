@@ -14,35 +14,89 @@ const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
 // ============================================================================
 
 /** Step 2: NER prompt — sent to a fast text-only model with raw OCR text */
-const NER_PROMPT = `You are a pharmaceutical NER specialist. Extract from the following medicine label text:
+const NER_PROMPT = `You are a pharmaceutical label NER (Named Entity Recognition) specialist. Your ONLY job is to extract structured fields from OCR text of medicine packaging.
 
-OUTPUT FORMAT (plain text, exactly as shown — no JSON, no extra text, no markdown):
-Drug: <generic chemical name with pharmacopoeia code e.g. "Paracetamol BP">
-Dosage: <number and unit e.g. "500 mg">
-Expiry: <MM/YYYY or "Not found">
+## STRICT EXTRACTION RULES
 
-RULES:
-- Drug = the CHEMICAL/GENERIC name (after IP/BP/USP/EP), NOT the brand name or tablet form
-- IGNORE: brand names, "Tablet", "Capsule", "Uncoated", "Film-coated", manufacturer names
-- If a field is missing, write "Not found"
-- Output ONLY the 3 lines above — no explanation
+### DRUG (Active Pharmaceutical Ingredient):
+- Extract the CHEMICAL/GENERIC drug name — NEVER brand names, manufacturer names, or physical descriptions
+- The active ingredient is typically followed by: "IP", "BP", "USP", "EP" (pharmacopoeia codes), or "mg/ml/%"
+- IGNORE words like: "Uncoated", "Coated", "Tablet", "Capsule", "Syrup", "Film-coated", "Extended-release" — these are DOSAGE FORMS, not drug names
+- IGNORE brand names (they appear prominently, often with ® or ™)
+- CORRECT examples: "Carbamazepine IP", "Metformin HCl", "Paracetamol BP"
+- WRONG examples: "Uncoated", "Tegrital", "Tablet"
+
+### DOSAGE:
+- Extract numeric value + unit: mg, mcg, ml, %, IU
+- Usually appears after the drug name: "Carbamazepine IP 200 mg" → dosage is "200 mg"
+- If multiple strengths appear, take the one tied to the active ingredient
+
+### EXPIRY:
+- Look for: "Exp", "Expiry", "Use before", "Use by", followed by MM/YYYY or DD/MM/YYYY
+- If genuinely absent from the label text, return "Not found" — do NOT guess or hallucinate
+
+## OUTPUT FORMAT (plain text, exactly as shown below, no JSON, no bullet points, no extra text):
+Drug: <generic_name pharmacopoeia_code>
+Dosage: <number unit>
+Expiry: <date or Not found>
+
+## PRIORITY ORDER for drug name:
+1. Text immediately before or after "IP", "BP", "USP", "EP"
+2. Text labeled "Active ingredient" or "Contains"
+3. Text in "Each tablet/capsule contains" sentence
+
+## EXAMPLE:
+OCR Input:
+"Tegrital® 200 | Each uncoated tablet contains Carbamazepine IP 200 mg | Dose: As directed by physician"
+
+Correct Output:
+Drug: Carbamazepine IP
+Dosage: 200 mg
+Expiry: Not found
 
 LABEL TEXT:
 `;
 
 /** Gemini single-step vision + NER prompt */
-const GEMINI_VISION_PROMPT = `You are a pharmaceutical NER specialist analyzing a medicine label image.
+const GEMINI_VISION_PROMPT = `You are a pharmaceutical label NER (Named Entity Recognition) specialist. Your ONLY job is to extract structured fields from medicine label images.
 
-OUTPUT FORMAT (plain text, exactly as shown — no JSON, no extra text, no markdown):
-Drug: <generic chemical name with pharmacopoeia code e.g. "Paracetamol BP">
-Dosage: <number and unit e.g. "500 mg">
-Expiry: <MM/YYYY or "Not found">
+## STRICT EXTRACTION RULES
 
-RULES:
-- Drug = the CHEMICAL/GENERIC name (after IP/BP/USP/EP), NOT the brand name or tablet form
-- IGNORE: brand names, "Tablet", "Capsule", "Uncoated", "Film-coated", manufacturer names
-- If a field is missing, write "Not found"
-- Output ONLY the 3 lines above — no explanation`;
+### DRUG (Active Pharmaceutical Ingredient):
+- Extract the CHEMICAL/GENERIC drug name — NEVER brand names, manufacturer names, or physical descriptions
+- The active ingredient is typically followed by: "IP", "BP", "USP", "EP" (pharmacopoeia codes), or "mg/ml/%"
+- IGNORE words like: "Uncoated", "Coated", "Tablet", "Capsule", "Syrup", "Film-coated", "Extended-release" — these are DOSAGE FORMS, not drug names
+- IGNORE brand names (they appear prominently, often with ® or ™)
+- CORRECT examples: "Carbamazepine IP", "Metformin HCl", "Paracetamol BP"
+- WRONG examples: "Uncoated", "Tegrital", "Tablet"
+
+### DOSAGE:
+- Extract numeric value + unit: mg, mcg, ml, %, IU
+- Usually appears after the drug name: "Carbamazepine IP 200 mg" → dosage is "200 mg"
+- If multiple strengths appear, take the one tied to the active ingredient
+
+### EXPIRY:
+- Look for: "Exp", "Expiry", "Use before", "Use by", followed by MM/YYYY or DD/MM/YYYY
+- If genuinely absent from the label text, return "Not found" — do NOT guess or hallucinate
+
+## OUTPUT FORMAT (plain text, exactly as shown below, no JSON, no bullet points, no extra text):
+Drug: <generic_name pharmacopoeia_code>
+Dosage: <number unit>
+Expiry: <date or Not found>
+
+## PRIORITY ORDER for drug name:
+1. Text immediately before or after "IP", "BP", "USP", "EP"
+2. Text labeled "Active ingredient" or "Contains"
+3. Text in "Each tablet/capsule contains" sentence
+
+## EXAMPLE:
+OCR Input:
+"Tegrital® 200 | Each uncoated tablet contains Carbamazepine IP 200 mg | Dose: As directed by physician"
+
+Correct Output:
+Drug: Carbamazepine IP
+Dosage: 200 mg
+Expiry: Not found`;
 
 // ============================================================================
 // TYPES
